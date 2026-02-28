@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-import { stringifyQuery } from 'court-listener-sdk/internal/utils/query';
+import { stringifyQuery } from 'court-listener-sdk-typescript/internal/utils/query';
 
 describe(stringifyQuery, () => {
   for (const [input, expected] of [
@@ -16,6 +16,12 @@ describe(stringifyQuery, () => {
   ] as const) {
     it(`${JSON.stringify(input)} -> ${expected}`, () => {
       expect(stringifyQuery(input)).toEqual(expected);
+    });
+  }
+
+  for (const value of [[], {}, new Date()]) {
+    it(`${JSON.stringify(value)} -> <error>`, () => {
+      expect(() => stringifyQuery({ value })).toThrow(`Cannot stringify type ${typeof value}`);
     });
   }
 });

@@ -14,36 +14,37 @@ import * as Opts from './internal/request-options';
 import { stringifyQuery } from './internal/utils/query';
 import { VERSION } from './version';
 import * as Errors from './core/error';
+import * as Pagination from './core/pagination';
+import { AbstractPage, CursorURLPageResponse } from './core/pagination';
 import * as Uploads from './core/uploads';
 import * as API from './resources/index';
 import { APIPromise } from './core/api-promise';
 import {
-  Category,
-  Pet,
-  PetCreateParams,
-  PetFindByStatusParams,
-  PetFindByStatusResponse,
-  PetFindByTagsParams,
-  PetFindByTagsResponse,
-  PetUpdateByIDParams,
-  PetUpdateParams,
-  PetUploadImageParams,
-  PetUploadImageResponse,
-  Pets,
-} from './resources/pets';
+  Cluster,
+  ClusterListParams,
+  ClusterRetrieveParams,
+  Clusters,
+  ClustersCursorURLPage,
+} from './resources/clusters';
+import { Court, CourtListParams, CourtRetrieveParams, Courts, CourtsCursorURLPage } from './resources/courts';
 import {
-  User,
-  UserCreateParams,
-  UserCreateWithListParams,
-  UserLoginParams,
-  UserLoginResponse,
-  UserUpdateParams,
-  Users,
-} from './resources/users';
-import { Store, StoreListInventoryResponse } from './resources/store/store';
+  Docket,
+  DocketListParams,
+  DocketRetrieveParams,
+  Dockets,
+  DocketsCursorURLPage,
+} from './resources/dockets';
+import {
+  Opinion,
+  OpinionListParams,
+  OpinionRetrieveParams,
+  Opinions,
+  OpinionsCursorURLPage,
+} from './resources/opinions';
 import { type Fetch } from './internal/builtin-types';
 import { HeadersLike, NullableHeaders, buildHeaders } from './internal/headers';
 import { FinalRequestOptions, RequestOptions } from './internal/request-options';
+import { toBase64 } from './internal/utils/base64';
 import { readEnv } from './internal/utils/env';
 import {
   type LogLevel,
@@ -56,14 +57,26 @@ import { isEmptyObj } from './internal/utils/values';
 
 export interface ClientOptions {
   /**
-   * Defaults to process.env['PETSTORE_API_KEY'].
+   * Token-based authentication. Provide the header as:
+   * `Authorization: Token <your-token-here>`
+   *
    */
-  apiKey?: string | undefined;
+  apiKey?: string | null | undefined;
+
+  /**
+   * HTTP Basic Authentication using your CourtListener username and password.
+   */
+  username?: string | null | undefined;
+
+  /**
+   * HTTP Basic Authentication using your CourtListener username and password.
+   */
+  password?: string | null | undefined;
 
   /**
    * Override the default base URL for the API, e.g., "https://api.example.com/v2/"
    *
-   * Defaults to process.env['COURT_LISTENER_SDK_BASE_URL'].
+   * Defaults to process.env['COURT_LISTENER_BASE_URL'].
    */
   baseURL?: string | null | undefined;
 
@@ -117,7 +130,7 @@ export interface ClientOptions {
   /**
    * Set the log level.
    *
-   * Defaults to process.env['COURT_LISTENER_SDK_LOG'] or 'warn' if it isn't set.
+   * Defaults to process.env['COURT_LISTENER_LOG'] or 'warn' if it isn't set.
    */
   logLevel?: LogLevel | undefined;
 
@@ -130,10 +143,12 @@ export interface ClientOptions {
 }
 
 /**
- * API Client for interfacing with the Court Listener SDK API.
+ * API Client for interfacing with the Court Listener API.
  */
-export class CourtListenerSDK {
-  apiKey: string;
+export class CourtListener {
+  apiKey: string | null;
+  username: string | null;
+  password: string | null;
 
   baseURL: string;
   maxRetries: number;
@@ -148,10 +163,12 @@ export class CourtListenerSDK {
   private _options: ClientOptions;
 
   /**
-   * API Client for interfacing with the Court Listener SDK API.
+   * API Client for interfacing with the Court Listener API.
    *
-   * @param {string | undefined} [opts.apiKey=process.env['PETSTORE_API_KEY'] ?? undefined]
-   * @param {string} [opts.baseURL=process.env['COURT_LISTENER_SDK_BASE_URL'] ?? https://petstore3.swagger.io/api/v3] - Override the default base URL for the API.
+   * @param {string | null | undefined} [opts.apiKey=process.env['COURT_LISTENER_API_KEY'] ?? null]
+   * @param {string | null | undefined} [opts.username=process.env['COURT_LISTENER_USERNAME'] ?? null]
+   * @param {string | null | undefined} [opts.password=process.env['COURT_LISTENER_PASSWORD'] ?? null]
+   * @param {string} [opts.baseURL=process.env['COURT_LISTENER_BASE_URL'] ?? https://www.courtlistener.com/api/rest/v4] - Override the default base URL for the API.
    * @param {number} [opts.timeout=1 minute] - The maximum amount of time (in milliseconds) the client will wait for a response before timing out.
    * @param {MergedRequestInit} [opts.fetchOptions] - Additional `RequestInit` options to be passed to `fetch` calls.
    * @param {Fetch} [opts.fetch] - Specify a custom `fetch` function implementation.
@@ -160,31 +177,29 @@ export class CourtListenerSDK {
    * @param {Record<string, string | undefined>} opts.defaultQuery - Default query parameters to include with every request to the API.
    */
   constructor({
-    baseURL = readEnv('COURT_LISTENER_SDK_BASE_URL'),
-    apiKey = readEnv('PETSTORE_API_KEY'),
+    baseURL = readEnv('COURT_LISTENER_BASE_URL'),
+    apiKey = readEnv('COURT_LISTENER_API_KEY') ?? null,
+    username = readEnv('COURT_LISTENER_USERNAME') ?? null,
+    password = readEnv('COURT_LISTENER_PASSWORD') ?? null,
     ...opts
   }: ClientOptions = {}) {
-    if (apiKey === undefined) {
-      throw new Errors.CourtListenerSDKError(
-        "The PETSTORE_API_KEY environment variable is missing or empty; either provide it, or instantiate the CourtListenerSDK client with an apiKey option, like new CourtListenerSDK({ apiKey: 'My API Key' }).",
-      );
-    }
-
     const options: ClientOptions = {
       apiKey,
+      username,
+      password,
       ...opts,
-      baseURL: baseURL || `https://petstore3.swagger.io/api/v3`,
+      baseURL: baseURL || `https://www.courtlistener.com/api/rest/v4`,
     };
 
     this.baseURL = options.baseURL!;
-    this.timeout = options.timeout ?? CourtListenerSDK.DEFAULT_TIMEOUT /* 1 minute */;
+    this.timeout = options.timeout ?? CourtListener.DEFAULT_TIMEOUT /* 1 minute */;
     this.logger = options.logger ?? console;
     const defaultLogLevel = 'warn';
     // Set default logLevel early so that we can log a warning in parseLogLevel.
     this.logLevel = defaultLogLevel;
     this.logLevel =
       parseLogLevel(options.logLevel, 'ClientOptions.logLevel', this) ??
-      parseLogLevel(readEnv('COURT_LISTENER_SDK_LOG'), "process.env['COURT_LISTENER_SDK_LOG']", this) ??
+      parseLogLevel(readEnv('COURT_LISTENER_LOG'), "process.env['COURT_LISTENER_LOG']", this) ??
       defaultLogLevel;
     this.fetchOptions = options.fetchOptions;
     this.maxRetries = options.maxRetries ?? 2;
@@ -194,6 +209,8 @@ export class CourtListenerSDK {
     this._options = options;
 
     this.apiKey = apiKey;
+    this.username = username;
+    this.password = password;
   }
 
   /**
@@ -210,6 +227,8 @@ export class CourtListenerSDK {
       fetch: this.fetch,
       fetchOptions: this.fetchOptions,
       apiKey: this.apiKey,
+      username: this.username,
+      password: this.password,
       ...options,
     });
     return client;
@@ -219,7 +238,7 @@ export class CourtListenerSDK {
    * Check whether the base URL is set to its default.
    */
   #baseURLOverridden(): boolean {
-    return this.baseURL !== 'https://petstore3.swagger.io/api/v3';
+    return this.baseURL !== 'https://www.courtlistener.com/api/rest/v4';
   }
 
   protected defaultQuery(): Record<string, string | undefined> | undefined {
@@ -227,13 +246,53 @@ export class CourtListenerSDK {
   }
 
   protected validateHeaders({ values, nulls }: NullableHeaders) {
-    return;
+    if (this.apiKey && values.get('authorization')) {
+      return;
+    }
+    if (nulls.has('authorization')) {
+      return;
+    }
+
+    if (this.username && this.password && values.get('authorization')) {
+      return;
+    }
+    if (nulls.has('authorization')) {
+      return;
+    }
+
+    throw new Error(
+      'Could not resolve authentication method. Expected either apiKey, username or password to be set. Or for one of the "Authorization" or "Authorization" headers to be explicitly omitted',
+    );
   }
 
   protected async authHeaders(opts: FinalRequestOptions): Promise<NullableHeaders | undefined> {
-    return buildHeaders([{ api_key: this.apiKey }]);
+    return buildHeaders([await this.tokenAuth(opts), await this.basicAuth(opts)]);
   }
 
+  protected async tokenAuth(opts: FinalRequestOptions): Promise<NullableHeaders | undefined> {
+    if (this.apiKey == null) {
+      return undefined;
+    }
+    return buildHeaders([{ Authorization: `Token ${this.apiKey}` }]);
+  }
+
+  protected async basicAuth(opts: FinalRequestOptions): Promise<NullableHeaders | undefined> {
+    if (!this.username) {
+      return undefined;
+    }
+
+    if (!this.password) {
+      return undefined;
+    }
+
+    const credentials = `${this.username}:${this.password}`;
+    const Authorization = `Basic ${toBase64(credentials)}`;
+    return buildHeaders([{ Authorization }]);
+  }
+
+  /**
+   * Basic re-implementation of `qs.stringify` for primitive types.
+   */
   protected stringifyQuery(query: object | Record<string, unknown>): string {
     return stringifyQuery(query);
   }
@@ -490,6 +549,30 @@ export class CourtListenerSDK {
     return { response, options, controller, requestLogID, retryOfRequestLogID, startTime };
   }
 
+  getAPIList<Item, PageClass extends Pagination.AbstractPage<Item> = Pagination.AbstractPage<Item>>(
+    path: string,
+    Page: new (...args: any[]) => PageClass,
+    opts?: PromiseOrValue<RequestOptions>,
+  ): Pagination.PagePromise<PageClass, Item> {
+    return this.requestAPIList(
+      Page,
+      opts && 'then' in opts ?
+        opts.then((opts) => ({ method: 'get', path, ...opts }))
+      : { method: 'get', path, ...opts },
+    );
+  }
+
+  requestAPIList<
+    Item = unknown,
+    PageClass extends Pagination.AbstractPage<Item> = Pagination.AbstractPage<Item>,
+  >(
+    Page: new (...args: ConstructorParameters<typeof Pagination.AbstractPage>) => PageClass,
+    options: PromiseOrValue<FinalRequestOptions>,
+  ): Pagination.PagePromise<PageClass, Item> {
+    const request = this.makeRequest(options, null, undefined);
+    return new Pagination.PagePromise<PageClass, Item>(this as any as CourtListener, request, Page);
+  }
+
   async fetchWithTimeout(
     url: RequestInfo,
     init: RequestInit | undefined,
@@ -718,10 +801,10 @@ export class CourtListenerSDK {
     }
   }
 
-  static CourtListenerSDK = this;
+  static CourtListener = this;
   static DEFAULT_TIMEOUT = 60000; // 1 minute
 
-  static CourtListenerSDKError = Errors.CourtListenerSDKError;
+  static CourtListenerError = Errors.CourtListenerError;
   static APIError = Errors.APIError;
   static APIConnectionError = Errors.APIConnectionError;
   static APIConnectionTimeoutError = Errors.APIConnectionTimeoutError;
@@ -738,52 +821,63 @@ export class CourtListenerSDK {
   static toFile = Uploads.toFile;
 
   /**
-   * Everything about your Pets
+   * Metadata about courts in the CourtListener database.
    */
-  pets: API.Pets = new API.Pets(this);
+  courts: API.Courts = new API.Courts(this);
   /**
-   * Access to Petstore orders
+   * Case-level metadata sitting at the top of the object hierarchy.
    */
-  store: API.Store = new API.Store(this);
+  dockets: API.Dockets = new API.Dockets(this);
   /**
-   * Operations about user
+   * Opinion clusters grouping related decisions from a single hearing.
    */
-  users: API.Users = new API.Users(this);
+  clusters: API.Clusters = new API.Clusters(this);
+  /**
+   * Individual judicial opinions with full text and metadata.
+   */
+  opinions: API.Opinions = new API.Opinions(this);
 }
 
-CourtListenerSDK.Pets = Pets;
-CourtListenerSDK.Store = Store;
-CourtListenerSDK.Users = Users;
+CourtListener.Courts = Courts;
+CourtListener.Dockets = Dockets;
+CourtListener.Clusters = Clusters;
+CourtListener.Opinions = Opinions;
 
-export declare namespace CourtListenerSDK {
+export declare namespace CourtListener {
   export type RequestOptions = Opts.RequestOptions;
 
-  export {
-    Pets as Pets,
-    type Category as Category,
-    type Pet as Pet,
-    type PetFindByStatusResponse as PetFindByStatusResponse,
-    type PetFindByTagsResponse as PetFindByTagsResponse,
-    type PetUploadImageResponse as PetUploadImageResponse,
-    type PetCreateParams as PetCreateParams,
-    type PetUpdateParams as PetUpdateParams,
-    type PetFindByStatusParams as PetFindByStatusParams,
-    type PetFindByTagsParams as PetFindByTagsParams,
-    type PetUpdateByIDParams as PetUpdateByIDParams,
-    type PetUploadImageParams as PetUploadImageParams,
-  };
-
-  export { Store as Store, type StoreListInventoryResponse as StoreListInventoryResponse };
+  export import CursorURLPage = Pagination.CursorURLPage;
+  export { type CursorURLPageResponse as CursorURLPageResponse };
 
   export {
-    Users as Users,
-    type User as User,
-    type UserLoginResponse as UserLoginResponse,
-    type UserCreateParams as UserCreateParams,
-    type UserUpdateParams as UserUpdateParams,
-    type UserCreateWithListParams as UserCreateWithListParams,
-    type UserLoginParams as UserLoginParams,
+    Courts as Courts,
+    type Court as Court,
+    type CourtsCursorURLPage as CourtsCursorURLPage,
+    type CourtRetrieveParams as CourtRetrieveParams,
+    type CourtListParams as CourtListParams,
   };
 
-  export type Order = API.Order;
+  export {
+    Dockets as Dockets,
+    type Docket as Docket,
+    type DocketsCursorURLPage as DocketsCursorURLPage,
+    type DocketRetrieveParams as DocketRetrieveParams,
+    type DocketListParams as DocketListParams,
+  };
+
+  export {
+    Clusters as Clusters,
+    type Cluster as Cluster,
+    type ClustersCursorURLPage as ClustersCursorURLPage,
+    type ClusterRetrieveParams as ClusterRetrieveParams,
+    type ClusterListParams as ClusterListParams,
+  };
+
+  export {
+    Opinions as Opinions,
+    type Opinion as Opinion,
+    type OpinionsCursorURLPage as OpinionsCursorURLPage,
+    type OpinionRetrieveParams as OpinionRetrieveParams,
+    type OpinionListParams as OpinionListParams,
+  };
 }

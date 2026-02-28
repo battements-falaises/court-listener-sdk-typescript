@@ -1,5 +1,5 @@
-import { multipartFormRequestOptions, createForm } from 'court-listener-sdk/internal/uploads';
-import { toFile } from 'court-listener-sdk/core/uploads';
+import { multipartFormRequestOptions, createForm } from 'court-listener-sdk-typescript/internal/uploads';
+import { toFile } from 'court-listener-sdk-typescript/core/uploads';
 
 describe('form data validation', () => {
   test('valid values do not error', async () => {
