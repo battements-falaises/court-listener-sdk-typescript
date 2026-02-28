@@ -43,14 +43,14 @@ For clients with a configuration JSON, it might look something like this:
 If you use Cursor, you can install the MCP server by using the button below. You will need to set your environment variables
 in Cursor's `mcp.json`, which can be found in Cursor Settings > Tools & MCP > New MCP Server.
 
-[![Add to Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en-US/install-mcp?name=court-listener-sdk-typescript-mcp&config=eyJjb21tYW5kIjoibnB4IiwiYXJncyI6WyIteSIsImNvdXJ0LWxpc3RlbmVyLXNkay10eXBlc2NyaXB0LW1jcCJdLCJlbnYiOnsiQ09VUlRfTElTVEVORVJfQVBJX0tFWSI6Ik15IEFQSSBLZXkiLCJDT1VSVF9MSVNURU5FUl9VU0VSTkFNRSI6Ik15IFVzZXJuYW1lIiwiQ09VUlRfTElTVEVORVJfUEFTU1dPUkQiOiJNeSBQYXNzd29yZCJ9fQ)
+[![Add to Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en-US/install-mcp?name=court-listener-sdk-typescript-mcp&config=eyJuYW1lIjoiY291cnQtbGlzdGVuZXItc2RrLXR5cGVzY3JpcHQtbWNwIiwidHJhbnNwb3J0IjoiaHR0cCIsInVybCI6Imh0dHBzOi8vY291cnQtbGlzdGVuZXItc2RrLnN0bG1jcC5jb20iLCJoZWFkZXJzIjp7IngtY291cnQtbGlzdGVuZXItYXBpLWtleSI6Ik15IEFQSSBLZXkiLCJ4LWNvdXJ0LWxpc3RlbmVyLXVzZXJuYW1lIjoiTXkgVXNlcm5hbWUiLCJ4LWNvdXJ0LWxpc3RlbmVyLXBhc3N3b3JkIjoiTXkgUGFzc3dvcmQifX0)
 
 ### VS Code
 
 If you use MCP, you can install the MCP server by clicking the link below. You will need to set your environment variables
 in VS Code's `mcp.json`, which can be found via Command Palette > MCP: Open User Configuration.
 
-[Open VS Code](https://vscode.stainless.com/mcp/%7B%22name%22%3A%22court-listener-sdk-typescript-mcp%22%2C%22command%22%3A%22npx%22%2C%22args%22%3A%5B%22-y%22%2C%22court-listener-sdk-typescript-mcp%22%5D%2C%22env%22%3A%7B%22COURT_LISTENER_API_KEY%22%3A%22My%20API%20Key%22%2C%22COURT_LISTENER_USERNAME%22%3A%22My%20Username%22%2C%22COURT_LISTENER_PASSWORD%22%3A%22My%20Password%22%7D%7D)
+[Open VS Code](https://vscode.stainless.com/mcp/%7B%22name%22%3A%22court-listener-sdk-typescript-mcp%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fcourt-listener-sdk.stlmcp.com%22%2C%22headers%22%3A%7B%22x-court-listener-api-key%22%3A%22My%20API%20Key%22%2C%22x-court-listener-username%22%3A%22My%20Username%22%2C%22x-court-listener-password%22%3A%22My%20Password%22%7D%7D)
 
 ### Claude Code
 
@@ -58,7 +58,7 @@ If you use Claude Code, you can install the MCP server by running the command be
 environment variables in Claude Code's `.claude.json`, which can be found in your home directory.
 
 ```
-claude mcp add court_listener_sdk_typescript_mcp_api --env COURT_LISTENER_API_KEY="My API Key" COURT_LISTENER_USERNAME="My Username" COURT_LISTENER_PASSWORD="My Password" -- npx -y court-listener-sdk-typescript-mcp
+claude mcp add court_listener_sdk_typescript_mcp_api --header "x-court-listener-api-key: My API Key" --header "x-court-listener-username: My Username" --header "x-court-listener-password: My Password" --transport http https://court-listener-sdk.stlmcp.com
 ```
 
 ## Code Mode
