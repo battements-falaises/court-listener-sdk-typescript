@@ -25,7 +25,7 @@ export default tseslint.config(
         {
           patterns: [
             {
-              regex: '^court-listener-sdk(/.*)?',
+              regex: '^court-listener-sdk-typescript(/.*)?',
               message: 'Use a relative import, not a package import.',
             },
           ],

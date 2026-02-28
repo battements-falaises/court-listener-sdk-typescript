@@ -1,12 +1,13 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-export { CourtListenerSDK as default } from './client';
+export { CourtListener as default } from './client';
 
 export { type Uploadable, toFile } from './core/uploads';
 export { APIPromise } from './core/api-promise';
-export { CourtListenerSDK, type ClientOptions } from './client';
+export { CourtListener, type ClientOptions } from './client';
+export { PagePromise } from './core/pagination';
 export {
-  CourtListenerSDKError,
+  CourtListenerError,
   APIError,
   APIConnectionError,
   APIConnectionTimeoutError,
