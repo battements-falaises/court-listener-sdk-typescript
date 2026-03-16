@@ -1,6 +1,6 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-import CourtListener from 'court-listener-sdk-typescript';
+import CourtListener from 'court-listener-sdk';
 
 const client = new CourtListener({
   apiKey: 'My API Key',

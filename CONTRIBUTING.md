@@ -55,12 +55,12 @@ $ cd court-listener-sdk-typescript
 # With yarn
 $ yarn link
 $ cd ../my-package
-$ yarn link court-listener-sdk-typescript
+$ yarn link court-listener-sdk
 
 # With pnpm
 $ pnpm link --global
 $ cd ../my-package
-$ pnpm link --global court-listener-sdk-typescript
+$ pnpm link --global court-listener-sdk
 ```
 
 ## Running tests

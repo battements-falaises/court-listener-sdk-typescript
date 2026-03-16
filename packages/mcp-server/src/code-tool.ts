@@ -15,7 +15,7 @@ import { WorkerInput, WorkerOutput } from './code-tool-types';
 import { getLogger } from './logger';
 import { SdkMethod } from './methods';
 import { McpCodeExecutionMode } from './options';
-import { ClientOptions } from 'court-listener-sdk-typescript';
+import { ClientOptions } from 'court-listener-sdk';
 
 const prompt = `Runs JavaScript code to interact with the Court Listener API.
 
@@ -246,7 +246,7 @@ const localDenoHandler = async ({
 
   // Follow symlinks in node_modules to allow read access to workspace-linked packages
   try {
-    const sdkPkgName = 'court-listener-sdk-typescript';
+    const sdkPkgName = 'court-listener-sdk';
     const sdkDir = path.resolve(packageNodeModulesPath, sdkPkgName);
     const realSdkDir = fs.realpathSync(sdkDir);
     if (realSdkDir !== sdkDir) {

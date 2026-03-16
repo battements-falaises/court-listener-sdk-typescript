@@ -2,7 +2,7 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import { ClientOptions } from 'court-listener-sdk-typescript';
+import { ClientOptions } from 'court-listener-sdk';
 import express from 'express';
 import pino from 'pino';
 import pinoHttp from 'pino-http';

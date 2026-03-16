@@ -5,7 +5,7 @@ import util from 'node:util';
 import Fuse from 'fuse.js';
 import ts from 'typescript';
 import { WorkerOutput } from './code-tool-types';
-import { CourtListener, ClientOptions } from 'court-listener-sdk-typescript';
+import { CourtListener, ClientOptions } from 'court-listener-sdk';
 
 function getRunFunctionSource(code: string): {
   type: 'declaration' | 'expression';
@@ -53,7 +53,7 @@ function getRunFunctionSource(code: string): {
 function getTSDiagnostics(code: string): string[] {
   const functionSource = getRunFunctionSource(code)!;
   const codeWithImport = [
-    'import { CourtListener } from "court-listener-sdk-typescript";',
+    'import { CourtListener } from "court-listener-sdk";',
     functionSource.type === 'declaration' ?
       `async function run(${functionSource.client}: CourtListener)`
     : `const run: (${functionSource.client}: CourtListener) => Promise<unknown> =`,
