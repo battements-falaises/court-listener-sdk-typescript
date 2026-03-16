@@ -1,10 +1,10 @@
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-import { APIPromise } from 'court-listener-sdk-typescript/core/api-promise';
+import { APIPromise } from 'court-listener-sdk/core/api-promise';
 
 import util from 'node:util';
-import CourtListener from 'court-listener-sdk-typescript';
-import { APIUserAbortError } from 'court-listener-sdk-typescript';
+import CourtListener from 'court-listener-sdk';
+import { APIUserAbortError } from 'court-listener-sdk';
 const defaultFetch = fetch;
 
 describe('instantiate client', () => {

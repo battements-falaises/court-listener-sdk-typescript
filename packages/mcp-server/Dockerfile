@@ -59,8 +59,8 @@ WORKDIR /app
 # Copy the build results, preserving directory structure
 COPY --from=builder /build .
 
-# Copy the built court-listener-sdk-typescript into node_modules
-COPY --from=builder /build/dist ./node_modules/court-listener-sdk-typescript
+# Copy the built court-listener-sdk into node_modules
+COPY --from=builder /build/dist ./node_modules/court-listener-sdk
 
 # Change ownership to nodejs user
 RUN chown -R nodejs:nodejs /app

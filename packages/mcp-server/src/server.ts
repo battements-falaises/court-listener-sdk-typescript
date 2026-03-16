@@ -7,8 +7,8 @@ import {
   ListToolsRequestSchema,
   SetLevelRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
-import { ClientOptions } from 'court-listener-sdk-typescript';
-import CourtListener from 'court-listener-sdk-typescript';
+import { ClientOptions } from 'court-listener-sdk';
+import CourtListener from 'court-listener-sdk';
 import { codeTool } from './code-tool';
 import docsSearchTool from './docs-search-tool';
 import { getInstructions } from './instructions';
@@ -19,7 +19,7 @@ import { HandlerFunction, McpRequestContext, ToolCallResult, McpTool } from './t
 export const newMcpServer = async (stainlessApiKey: string | undefined) =>
   new McpServer(
     {
-      name: 'court_listener_sdk_typescript_api',
+      name: 'court_listener_sdk_api',
       version: '0.0.1',
     },
     {

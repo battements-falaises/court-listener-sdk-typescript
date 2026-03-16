@@ -25,7 +25,7 @@ For clients with a configuration JSON, it might look something like this:
 ```json
 {
   "mcpServers": {
-    "court_listener_sdk_typescript_api": {
+    "court_listener_sdk_api": {
       "command": "npx",
       "args": ["-y", "court-listener-sdk-typescript-mcp"],
       "env": {
@@ -96,7 +96,7 @@ A configuration JSON for this server might look like this, assuming the server i
 ```json
 {
   "mcpServers": {
-    "court_listener_sdk_typescript_api": {
+    "court_listener_sdk_api": {
       "url": "http://localhost:3000",
       "headers": {
         "Authorization": "Basic <auth value>"
