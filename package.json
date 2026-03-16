@@ -1,6 +1,6 @@
 {
-  "name": "court-listener-sdk",
-  "version": "0.0.1",
+  "name": "court-listener-sdk-typescript",
+  "version": "0.0.2",
   "description": "The official TypeScript library for the Court Listener API",
   "author": "Court Listener <>",
   "types": "dist/index.d.ts",
