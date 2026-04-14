@@ -1,5 +1,5 @@
 {
-  "name": "court-listener-sdk-typescript-mcp",
+  "name": "court-listener-sdk-mcp",
   "version": "0.0.1",
   "description": "The official MCP Server for the Court Listener API",
   "author": "Court Listener <>",
@@ -77,8 +77,8 @@
     "tsconfig-paths": "^4.0.0"
   },
   "imports": {
-    "court-listener-sdk-typescript-mcp": ".",
-    "court-listener-sdk-typescript-mcp/*": "./src/*"
+    "court-listener-sdk-mcp": ".",
+    "court-listener-sdk-mcp/*": "./src/*"
   },
   "exports": {
     ".": {

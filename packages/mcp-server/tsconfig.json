@@ -8,8 +8,8 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "paths": {
-      "court-listener-sdk-typescript-mcp/*": ["./src/*"],
-      "court-listener-sdk-typescript-mcp": ["./src/index.ts"]
+      "court-listener-sdk-mcp/*": ["./src/*"],
+      "court-listener-sdk-mcp": ["./src/index.ts"]
     },
     "noEmit": true,
 
