@@ -5,8 +5,8 @@
   "compilerOptions": {
     "rootDir": "./dist/src",
     "paths": {
-      "court-listener-sdk-typescript-mcp/*": ["./dist/src/*"],
-      "court-listener-sdk-typescript-mcp": ["./dist/src/index.ts"]
+      "court-listener-sdk-mcp/*": ["./dist/src/*"],
+      "court-listener-sdk-mcp": ["./dist/src/index.ts"]
     },
     "noEmit": false,
     "declaration": true,
