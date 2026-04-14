@@ -104,6 +104,11 @@ const EMBEDDED_METHODS: MethodEntry[] = [
         example:
           'package com.court_listener_sdk.api.example\n\nimport com.court_listener_sdk.api.client.CourtListenerClient\nimport com.court_listener_sdk.api.client.okhttp.CourtListenerOkHttpClient\nimport com.court_listener_sdk.api.models.courts.CourtListPage\nimport com.court_listener_sdk.api.models.courts.CourtListParams\n\nfun main() {\n    val client: CourtListenerClient = CourtListenerOkHttpClient.fromEnv()\n\n    val page: CourtListPage = client.courts().list()\n}',
       },
+      php: {
+        method: 'courts->list',
+        example:
+          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$page = $client->courts->list(\n  id: 'id',\n  count: 'on',\n  cursor: 'cursor',\n  dateModified: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  fields: 'fields',\n  format: 'json',\n  fullName: 'full_name',\n  fullNameStartswith: 'full_name__startswith',\n  idIn: 'id__in',\n  jurisdiction: 'jurisdiction',\n  omit: 'omit',\n  orderBy: 'order_by',\n  page: 1,\n);\n\nvar_dump($page);",
+      },
       python: {
         method: 'courts.list',
         example:
@@ -152,6 +157,11 @@ const EMBEDDED_METHODS: MethodEntry[] = [
         method: 'courts().retrieve',
         example:
           'package com.court_listener_sdk.api.example\n\nimport com.court_listener_sdk.api.client.CourtListenerClient\nimport com.court_listener_sdk.api.client.okhttp.CourtListenerOkHttpClient\nimport com.court_listener_sdk.api.models.courts.Court\nimport com.court_listener_sdk.api.models.courts.CourtRetrieveParams\n\nfun main() {\n    val client: CourtListenerClient = CourtListenerOkHttpClient.fromEnv()\n\n    val court: Court = client.courts().retrieve("id")\n}',
+      },
+      php: {
+        method: 'courts->retrieve',
+        example:
+          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$court = $client->courts->retrieve(\n  'id', fields: 'fields', format: 'json', omit: 'omit'\n);\n\nvar_dump($court);",
       },
       python: {
         method: 'courts.retrieve',
@@ -237,6 +247,11 @@ const EMBEDDED_METHODS: MethodEntry[] = [
         example:
           'package com.court_listener_sdk.api.example\n\nimport com.court_listener_sdk.api.client.CourtListenerClient\nimport com.court_listener_sdk.api.client.okhttp.CourtListenerOkHttpClient\nimport com.court_listener_sdk.api.models.dockets.DocketListPage\nimport com.court_listener_sdk.api.models.dockets.DocketListParams\n\nfun main() {\n    val client: CourtListenerClient = CourtListenerOkHttpClient.fromEnv()\n\n    val page: DocketListPage = client.dockets().list()\n}',
       },
+      php: {
+        method: 'dockets->list',
+        example:
+          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$page = $client->dockets->list(\n  id: 0,\n  blocked: true,\n  caseName: 'case_name',\n  cause: 'cause',\n  count: 'on',\n  court: 'court',\n  courtJurisdiction: 'court__jurisdiction',\n  courtJurisdiction: 'court__jurisdiction!',\n  cursor: 'cursor',\n  dateCreated: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateCreatedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateCreatedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateFiled: '2019-12-27',\n  dateFiledGte: '2019-12-27',\n  dateFiledLte: '2019-12-27',\n  dateModified: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateTerminated: '2019-12-27',\n  dateTerminatedGte: '2019-12-27',\n  dateTerminatedLte: '2019-12-27',\n  docketNumber: 'docket_number',\n  fields: 'fields',\n  format: 'json',\n  idGt: 0,\n  idGte: 0,\n  idLt: 0,\n  idLte: 0,\n  idRange: 'id__range',\n  natureOfSuit: 'nature_of_suit',\n  omit: 'omit',\n  orderBy: 'order_by',\n  page: 1,\n  source: 0,\n);\n\nvar_dump($page);",
+      },
       python: {
         method: 'dockets.list',
         example:
@@ -284,6 +299,11 @@ const EMBEDDED_METHODS: MethodEntry[] = [
         method: 'dockets().retrieve',
         example:
           'package com.court_listener_sdk.api.example\n\nimport com.court_listener_sdk.api.client.CourtListenerClient\nimport com.court_listener_sdk.api.client.okhttp.CourtListenerOkHttpClient\nimport com.court_listener_sdk.api.models.dockets.Docket\nimport com.court_listener_sdk.api.models.dockets.DocketRetrieveParams\n\nfun main() {\n    val client: CourtListenerClient = CourtListenerOkHttpClient.fromEnv()\n\n    val docket: Docket = client.dockets().retrieve(0L)\n}',
+      },
+      php: {
+        method: 'dockets->retrieve',
+        example:
+          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$docket = $client->dockets->retrieve(\n  0, fields: 'fields', format: 'json', omit: 'omit'\n);\n\nvar_dump($docket);",
       },
       python: {
         method: 'dockets.retrieve',
@@ -363,6 +383,11 @@ const EMBEDDED_METHODS: MethodEntry[] = [
         example:
           'package com.court_listener_sdk.api.example\n\nimport com.court_listener_sdk.api.client.CourtListenerClient\nimport com.court_listener_sdk.api.client.okhttp.CourtListenerOkHttpClient\nimport com.court_listener_sdk.api.models.clusters.ClusterListPage\nimport com.court_listener_sdk.api.models.clusters.ClusterListParams\n\nfun main() {\n    val client: CourtListenerClient = CourtListenerOkHttpClient.fromEnv()\n\n    val page: ClusterListPage = client.clusters().list()\n}',
       },
+      php: {
+        method: 'clusters->list',
+        example:
+          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$page = $client->clusters->list(\n  id: 0,\n  citation: 'citation',\n  count: 'on',\n  cursor: 'cursor',\n  dateCreated: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateCreatedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateCreatedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateFiled: '2019-12-27',\n  dateFiledGte: '2019-12-27',\n  dateFiledLte: '2019-12-27',\n  dateModified: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  docket: 0,\n  docketCourt: 'docket__court',\n  docketDocketNumber: 'docket__docket_number',\n  fields: 'fields',\n  format: 'json',\n  idGt: 0,\n  idGte: 0,\n  idLt: 0,\n  idLte: 0,\n  idRange: 'id__range',\n  judges: 'judges',\n  omit: 'omit',\n  orderBy: 'order_by',\n  page: 1,\n);\n\nvar_dump($page);",
+      },
       python: {
         method: 'clusters.list',
         example:
@@ -412,6 +437,11 @@ const EMBEDDED_METHODS: MethodEntry[] = [
         method: 'clusters().retrieve',
         example:
           'package com.court_listener_sdk.api.example\n\nimport com.court_listener_sdk.api.client.CourtListenerClient\nimport com.court_listener_sdk.api.client.okhttp.CourtListenerOkHttpClient\nimport com.court_listener_sdk.api.models.clusters.Cluster\nimport com.court_listener_sdk.api.models.clusters.ClusterRetrieveParams\n\nfun main() {\n    val client: CourtListenerClient = CourtListenerOkHttpClient.fromEnv()\n\n    val cluster: Cluster = client.clusters().retrieve(0L)\n}',
+      },
+      php: {
+        method: 'clusters->retrieve',
+        example:
+          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$cluster = $client->clusters->retrieve(\n  0, fields: 'fields', format: 'json', omit: 'omit'\n);\n\nvar_dump($cluster);",
       },
       python: {
         method: 'clusters.retrieve',
@@ -488,6 +518,11 @@ const EMBEDDED_METHODS: MethodEntry[] = [
         example:
           'package com.court_listener_sdk.api.example\n\nimport com.court_listener_sdk.api.client.CourtListenerClient\nimport com.court_listener_sdk.api.client.okhttp.CourtListenerOkHttpClient\nimport com.court_listener_sdk.api.models.opinions.OpinionListPage\nimport com.court_listener_sdk.api.models.opinions.OpinionListParams\n\nfun main() {\n    val client: CourtListenerClient = CourtListenerOkHttpClient.fromEnv()\n\n    val page: OpinionListPage = client.opinions().list()\n}',
       },
+      php: {
+        method: 'opinions->list',
+        example:
+          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$page = $client->opinions->list(\n  id: 0,\n  citedOpinion: 0,\n  cluster: 0,\n  clusterDocketCourt: 'cluster__docket__court',\n  clusterDocketDocketNumber: 'cluster__docket__docket_number',\n  count: 'on',\n  cursor: 'cursor',\n  dateCreated: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateCreatedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateCreatedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModified: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  fields: 'fields',\n  format: 'json',\n  idGt: 0,\n  idGte: 0,\n  idLt: 0,\n  idLte: 0,\n  idRange: 'id__range',\n  omit: 'omit',\n  orderBy: 'order_by',\n  page: 1,\n  type: 'type',\n);\n\nvar_dump($page);",
+      },
       python: {
         method: 'opinions.list',
         example:
@@ -538,6 +573,11 @@ const EMBEDDED_METHODS: MethodEntry[] = [
         example:
           'package com.court_listener_sdk.api.example\n\nimport com.court_listener_sdk.api.client.CourtListenerClient\nimport com.court_listener_sdk.api.client.okhttp.CourtListenerOkHttpClient\nimport com.court_listener_sdk.api.models.opinions.Opinion\nimport com.court_listener_sdk.api.models.opinions.OpinionRetrieveParams\n\nfun main() {\n    val client: CourtListenerClient = CourtListenerOkHttpClient.fromEnv()\n\n    val opinion: Opinion = client.opinions().retrieve(0L)\n}',
       },
+      php: {
+        method: 'opinions->retrieve',
+        example:
+          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$opinion = $client->opinions->retrieve(\n  0, fields: 'fields', format: 'json', omit: 'omit'\n);\n\nvar_dump($opinion);",
+      },
       python: {
         method: 'opinions.retrieve',
         example:
@@ -582,6 +622,11 @@ const EMBEDDED_READMES: { language: string; content: string }[] = [
     language: 'cli',
     content:
       "# Court Listener CLI\n\nThe official CLI for the [Court Listener REST API](https://www.courtlistener.com/contact/).\n\nIt is generated with [Stainless](https://www.stainless.com/).\n\n<!-- x-release-please-start-version -->\n\n## Installation\n\n### Installing with Go\n\nTo test or install the CLI locally, you need [Go](https://go.dev/doc/install) version 1.22 or later installed.\n\n~~~sh\ngo install 'github.com/battements-falaises/court-listener-sdk-cli/cmd/court-listener-sdk@latest'\n~~~\n\nOnce you have run `go install`, the binary is placed in your Go bin directory:\n\n- **Default location**: `$HOME/go/bin` (or `$GOPATH/bin` if GOPATH is set)\n- **Check your path**: Run `go env GOPATH` to see the base directory\n\nIf commands aren't found after installation, add the Go bin directory to your PATH:\n\n~~~sh\n# Add to your shell profile (.zshrc, .bashrc, etc.)\nexport PATH=\"$PATH:$(go env GOPATH)/bin\"\n~~~\n\n<!-- x-release-please-end -->\n\n### Running Locally\n\nAfter cloning the git repository for this project, you can use the\n`scripts/run` script to run the tool locally:\n\n~~~sh\n./scripts/run args...\n~~~\n\n## Usage\n\nThe CLI follows a resource-based command structure:\n\n~~~sh\ncourt-listener-sdk [resource] <command> [flags...]\n~~~\n\n~~~sh\ncourt-listener-sdk courts list \\\n  --api-key 'My API Key'\n~~~\n\nFor details about specific commands, use the `--help` flag.\n\n### Environment variables\n\n| Environment variable      | Description                                                                                  | Required | Default value |\n| ------------------------- | -------------------------------------------------------------------------------------------- | -------- | ------------- |\n| `COURT_LISTENER_API_KEY`  | Token-based authentication. Provide the header as:\n`Authorization: Token <your-token-here>`\n | no       | `null`        |\n| `COURT_LISTENER_USERNAME` | HTTP Basic Authentication using your CourtListener username and password.                    | no       | `null`        |\n| `COURT_LISTENER_PASSWORD` | HTTP Basic Authentication using your CourtListener username and password.                    | no       | `null`        |\n\n### Global flags\n\n- `--api-key` - Token-based authentication. Provide the header as:\n`Authorization: Token <your-token-here>`\n (can also be set with `COURT_LISTENER_API_KEY` env var)\n- `--username` - HTTP Basic Authentication using your CourtListener username and password. (can also be set with `COURT_LISTENER_USERNAME` env var)\n- `--password` - HTTP Basic Authentication using your CourtListener username and password. (can also be set with `COURT_LISTENER_PASSWORD` env var)\n- `--help` - Show command line usage\n- `--debug` - Enable debug logging (includes HTTP request/response details)\n- `--version`, `-v` - Show the CLI version\n- `--base-url` - Use a custom API backend URL\n- `--format` - Change the output format (`auto`, `explore`, `json`, `jsonl`, `pretty`, `raw`, `yaml`)\n- `--format-error` - Change the output format for errors (`auto`, `explore`, `json`, `jsonl`, `pretty`, `raw`, `yaml`)\n- `--transform` - Transform the data output using [GJSON syntax](https://github.com/tidwall/gjson/blob/master/SYNTAX.md)\n- `--transform-error` - Transform the error output using [GJSON syntax](https://github.com/tidwall/gjson/blob/master/SYNTAX.md)\n\n### Passing files as arguments\n\nTo pass files to your API, you can use the `@myfile.ext` syntax:\n\n~~~bash\ncourt-listener-sdk <command> --arg @abe.jpg\n~~~\n\nFiles can also be passed inside JSON or YAML blobs:\n\n~~~bash\ncourt-listener-sdk <command> --arg '{image: \"@abe.jpg\"}'\n# Equivalent:\ncourt-listener-sdk <command> <<YAML\narg:\n  image: \"@abe.jpg\"\nYAML\n~~~\n\nIf you need to pass a string literal that begins with an `@` sign, you can\nescape the `@` sign to avoid accidentally passing a file.\n\n~~~bash\ncourt-listener-sdk <command> --username '\\@abe'\n~~~\n\n#### Explicit encoding\n\nFor JSON endpoints, the CLI tool does filetype sniffing to determine whether the\nfile contents should be sent as a string literal (for plain text files) or as a\nbase64-encoded string literal (for binary files). If you need to explicitly send\nthe file as either plain text or base64-encoded data, you can use\n`@file://myfile.txt` (for string encoding) or `@data://myfile.dat` (for\nbase64-encoding). Note that absolute paths will begin with `@file://` or\n`@data://`, followed by a third `/` (for example, `@file:///tmp/file.txt`).\n\n~~~bash\ncourt-listener-sdk <command> --arg @data://file.txt\n~~~\n",
+  },
+  {
+    language: 'php',
+    content:
+      '# Court Listener PHP API Library\n\nThe Court Listener PHP library provides convenient access to the Court Listener REST API from any PHP 8.1.0+ application.\n\n## Installation\n\nTo use this package, install via Composer by adding the following to your application\'s `composer.json`:\n\n```json\n{\n  "repositories": [\n    {\n      "type": "vcs",\n      "url": "git@github.com:stainless-sdks/court-listener-sdk-php.git"\n    }\n  ],\n  "require": {\n    "org-placeholder/court-listener-sdk": "dev-main"\n  }\n}\n```\n\n## Usage\n\n```php\n<?php\n\n$client = new Client(apiKey: getenv(\'COURT_LISTENER_API_KEY\') ?: \'My API Key\');\n\n$page = $client->courts->list();\n\nvar_dump($page->id);\n```',
   },
 ];
 
