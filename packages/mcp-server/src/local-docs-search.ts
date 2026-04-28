@@ -81,23 +81,15 @@ const EMBEDDED_METHODS: MethodEntry[] = [
     markdown:
       "## list\n\n`client.courts.list(id?: string, count?: 'on', cursor?: string, date_modified?: string, date_modified__gte?: string, date_modified__lte?: string, fields?: string, format?: 'json' | 'xml' | 'html', full_name?: string, full_name__startswith?: string, id__in?: string, jurisdiction?: string, omit?: string, order_by?: string, page?: number): { id?: string; citation_string?: string; date_created?: string; date_modified?: string; end_date?: string; full_name?: string; in_use?: boolean; jurisdiction?: string; position?: number; resource_uri?: string; short_name?: string; start_date?: string; url?: string; }`\n\n**get** `/courts/`\n\nReturns a paginated list of courts. Results can generally be cached as\ncourt data changes infrequently.\n\n\n### Parameters\n\n- `id?: string`\n  Filter by court identifier (e.g. `scotus`, `ca9`, `dcd`).\n\n- `count?: 'on'`\n  Set to `on` to return only the total count of matching items without\nresult data. When enabled, pagination parameters are ignored.\n\n- `cursor?: string`\n  Cursor token for deep pagination. Returned in the `next` / `previous`\nfields of paginated responses. Available when ordering by `id`,\n`date_modified`, or `date_created`.\n\n\n- `date_modified?: string`\n  Filter by exact date modified (ISO-8601).\n\n- `date_modified__gte?: string`\n  Filter courts modified on or after this date.\n\n- `date_modified__lte?: string`\n  Filter courts modified on or before this date.\n\n- `fields?: string`\n  Comma-separated list of fields to include. Supports nested fields via\ndouble-underscore notation (e.g. `educations__id`).\n\n\n- `format?: 'json' | 'xml' | 'html'`\n  Response serialization format. JSON is default when no `Accept` header\nis provided.\n\n- `full_name?: string`\n  Filter by the full name of the court.\n\n- `full_name__startswith?: string`\n  Filter courts whose full name starts with the given value.\n\n- `id__in?: string`\n  Filter by multiple court identifiers (comma-separated).\n\n- `jurisdiction?: string`\n  Filter by jurisdiction type. Common values:\n`F` (Federal Appellate), `FD` (Federal District),\n`FB` (Federal Bankruptcy), `FBP` (Federal Bankruptcy Panel),\n`FS` (Federal Special), `S` (State Supreme),\n`SA` (State Appellate), `ST` (State Trial),\n`SS` (State Special), `SAG` (State Attorney General),\n`T` (Tribal), `I` (International), `C` (Committee),\n`TES` (Testing).\n\n\n- `omit?: string`\n  Comma-separated list of fields to exclude. Supports nested fields via\ndouble-underscore notation.\n\n\n- `order_by?: string`\n  Comma-separated list of fields to order by. Prefix with `-` for\ndescending order. Use a secondary field as a tie-breaker for\ndeterministic ordering (e.g. `date_filed,id`).\n\n\n- `page?: number`\n  Page number for standard pagination (limited to 100 pages).\n\n### Returns\n\n- `{ id?: string; citation_string?: string; date_created?: string; date_modified?: string; end_date?: string; full_name?: string; in_use?: boolean; jurisdiction?: string; position?: number; resource_uri?: string; short_name?: string; start_date?: string; url?: string; }`\n\n  - `id?: string`\n  - `citation_string?: string`\n  - `date_created?: string`\n  - `date_modified?: string`\n  - `end_date?: string`\n  - `full_name?: string`\n  - `in_use?: boolean`\n  - `jurisdiction?: string`\n  - `position?: number`\n  - `resource_uri?: string`\n  - `short_name?: string`\n  - `start_date?: string`\n  - `url?: string`\n\n### Example\n\n```typescript\nimport CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener();\n\n// Automatically fetches more pages as needed.\nfor await (const court of client.courts.list()) {\n  console.log(court);\n}\n```",
     perLanguage: {
-      cli: {
-        method: 'courts list',
-        example: "court-listener-sdk courts list \\\n  --api-key 'My API Key'",
-      },
-      csharp: {
-        method: 'Courts.List',
+      typescript: {
+        method: 'client.courts.list',
         example:
-          'CourtListParams parameters = new();\n\nvar page = await client.Courts.List(parameters);\nawait foreach (var item in page.Paginate())\n{\n    Console.WriteLine(item);\n}',
+          "import CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener({\n  apiKey: process.env['COURT_LISTENER_API_KEY'], // This is the default and can be omitted\n});\n\n// Automatically fetches more pages as needed.\nfor await (const court of client.courts.list()) {\n  console.log(court.id);\n}",
       },
-      go: {
-        method: 'client.Courts.List',
+      python: {
+        method: 'courts.list',
         example:
-          'package main\n\nimport (\n\t"context"\n\t"fmt"\n\n\t"github.com/battements-falaises/court-listener-sdk-go"\n\t"github.com/battements-falaises/court-listener-sdk-go/option"\n)\n\nfunc main() {\n\tclient := courtlistenersdk.NewClient(\n\t\toption.WithAPIKey("My API Key"),\n\t)\n\tpage, err := client.Courts.List(context.TODO(), courtlistenersdk.CourtListParams{})\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf("%+v\\n", page)\n}\n',
-      },
-      http: {
-        example:
-          'curl https://www.courtlistener.com/api/rest/v4/courts/ \\\n    -H "Authorization: Bearer $COURT_LISTENER_API_KEY"',
+          'import os\nfrom court_listener_sdk import CourtListener\n\nclient = CourtListener(\n    api_key=os.environ.get("COURT_LISTENER_API_KEY"),  # This is the default and can be omitted\n)\npage = client.courts.list()\npage = page.results[0]\nprint(page.id)',
       },
       java: {
         method: 'courts().list',
@@ -109,25 +101,33 @@ const EMBEDDED_METHODS: MethodEntry[] = [
         example:
           'package com.court_listener_sdk.api.example\n\nimport com.court_listener_sdk.api.client.CourtListenerClient\nimport com.court_listener_sdk.api.client.okhttp.CourtListenerOkHttpClient\nimport com.court_listener_sdk.api.models.courts.CourtListPage\nimport com.court_listener_sdk.api.models.courts.CourtListParams\n\nfun main() {\n    val client: CourtListenerClient = CourtListenerOkHttpClient.fromEnv()\n\n    val page: CourtListPage = client.courts().list()\n}',
       },
-      php: {
-        method: 'courts->list',
+      go: {
+        method: 'client.Courts.List',
         example:
-          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$page = $client->courts->list(\n  id: 'id',\n  count: 'on',\n  cursor: 'cursor',\n  dateModified: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  fields: 'fields',\n  format: 'json',\n  fullName: 'full_name',\n  fullNameStartswith: 'full_name__startswith',\n  idIn: 'id__in',\n  jurisdiction: 'jurisdiction',\n  omit: 'omit',\n  orderBy: 'order_by',\n  page: 1,\n);\n\nvar_dump($page);",
-      },
-      python: {
-        method: 'courts.list',
-        example:
-          'import os\nfrom court_listener_sdk import CourtListener\n\nclient = CourtListener(\n    api_key=os.environ.get("COURT_LISTENER_API_KEY"),  # This is the default and can be omitted\n)\npage = client.courts.list()\npage = page.results[0]\nprint(page.id)',
+          'package main\n\nimport (\n\t"context"\n\t"fmt"\n\n\t"github.com/battements-falaises/court-listener-sdk-go"\n\t"github.com/battements-falaises/court-listener-sdk-go/option"\n)\n\nfunc main() {\n\tclient := courtlistenersdk.NewClient(\n\t\toption.WithAPIKey("My API Key"),\n\t)\n\tpage, err := client.Courts.List(context.TODO(), courtlistenersdk.CourtListParams{})\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf("%+v\\n", page)\n}\n',
       },
       ruby: {
         method: 'courts.list',
         example:
           'require "court_listener_sdk"\n\ncourt_listener = CourtListenerSDK::Client.new(api_key: "My API Key")\n\npage = court_listener.courts.list\n\nputs(page)',
       },
-      typescript: {
-        method: 'client.courts.list',
+      cli: {
+        method: 'courts list',
+        example: "court-listener-sdk courts list \\\n  --api-key 'My API Key'",
+      },
+      php: {
+        method: 'courts->list',
         example:
-          "import CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener({\n  apiKey: process.env['COURT_LISTENER_API_KEY'], // This is the default and can be omitted\n});\n\n// Automatically fetches more pages as needed.\nfor await (const court of client.courts.list()) {\n  console.log(court.id);\n}",
+          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$page = $client->courts->list(\n  id: 'id',\n  count: 'on',\n  cursor: 'cursor',\n  dateModified: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  fields: 'fields',\n  format: 'json',\n  fullName: 'full_name',\n  fullNameStartswith: 'full_name__startswith',\n  idIn: 'id__in',\n  jurisdiction: 'jurisdiction',\n  omit: 'omit',\n  orderBy: 'order_by',\n  page: 1,\n);\n\nvar_dump($page);",
+      },
+      csharp: {
+        method: 'Courts.List',
+        example:
+          'CourtListParams parameters = new();\n\nvar page = await client.Courts.List(parameters);\nawait foreach (var item in page.Paginate())\n{\n    Console.WriteLine(item);\n}',
+      },
+      http: {
+        example:
+          'curl https://www.courtlistener.com/api/rest/v4/courts/ \\\n    -H "Authorization: Bearer $COURT_LISTENER_API_KEY"',
       },
     },
   },
@@ -145,23 +145,15 @@ const EMBEDDED_METHODS: MethodEntry[] = [
     markdown:
       "## retrieve\n\n`client.courts.retrieve(id: string, fields?: string, format?: 'json' | 'xml' | 'html', omit?: string): { id?: string; citation_string?: string; date_created?: string; date_modified?: string; end_date?: string; full_name?: string; in_use?: boolean; jurisdiction?: string; position?: number; resource_uri?: string; short_name?: string; start_date?: string; url?: string; }`\n\n**get** `/courts/{id}/`\n\nRetrieve a single court\n\n### Parameters\n\n- `id: string`\n\n- `fields?: string`\n  Comma-separated list of fields to include. Supports nested fields via\ndouble-underscore notation (e.g. `educations__id`).\n\n\n- `format?: 'json' | 'xml' | 'html'`\n  Response serialization format. JSON is default when no `Accept` header\nis provided.\n\n- `omit?: string`\n  Comma-separated list of fields to exclude. Supports nested fields via\ndouble-underscore notation.\n\n\n### Returns\n\n- `{ id?: string; citation_string?: string; date_created?: string; date_modified?: string; end_date?: string; full_name?: string; in_use?: boolean; jurisdiction?: string; position?: number; resource_uri?: string; short_name?: string; start_date?: string; url?: string; }`\n\n  - `id?: string`\n  - `citation_string?: string`\n  - `date_created?: string`\n  - `date_modified?: string`\n  - `end_date?: string`\n  - `full_name?: string`\n  - `in_use?: boolean`\n  - `jurisdiction?: string`\n  - `position?: number`\n  - `resource_uri?: string`\n  - `short_name?: string`\n  - `start_date?: string`\n  - `url?: string`\n\n### Example\n\n```typescript\nimport CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener();\n\nconst court = await client.courts.retrieve('id');\n\nconsole.log(court);\n```",
     perLanguage: {
-      cli: {
-        method: 'courts retrieve',
-        example: "court-listener-sdk courts retrieve \\\n  --api-key 'My API Key' \\\n  --id id",
-      },
-      csharp: {
-        method: 'Courts.Retrieve',
+      typescript: {
+        method: 'client.courts.retrieve',
         example:
-          'CourtRetrieveParams parameters = new() { ID = "id" };\n\nvar court = await client.Courts.Retrieve(parameters);\n\nConsole.WriteLine(court);',
+          "import CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener({\n  apiKey: process.env['COURT_LISTENER_API_KEY'], // This is the default and can be omitted\n});\n\nconst court = await client.courts.retrieve('id');\n\nconsole.log(court.id);",
       },
-      go: {
-        method: 'client.Courts.Get',
+      python: {
+        method: 'courts.retrieve',
         example:
-          'package main\n\nimport (\n\t"context"\n\t"fmt"\n\n\t"github.com/battements-falaises/court-listener-sdk-go"\n\t"github.com/battements-falaises/court-listener-sdk-go/option"\n)\n\nfunc main() {\n\tclient := courtlistenersdk.NewClient(\n\t\toption.WithAPIKey("My API Key"),\n\t)\n\tcourt, err := client.Courts.Get(\n\t\tcontext.TODO(),\n\t\t"id",\n\t\tcourtlistenersdk.CourtGetParams{},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf("%+v\\n", court.ID)\n}\n',
-      },
-      http: {
-        example:
-          'curl https://www.courtlistener.com/api/rest/v4/courts/$ID/ \\\n    -H "Authorization: Bearer $COURT_LISTENER_API_KEY"',
+          'import os\nfrom court_listener_sdk import CourtListener\n\nclient = CourtListener(\n    api_key=os.environ.get("COURT_LISTENER_API_KEY"),  # This is the default and can be omitted\n)\ncourt = client.courts.retrieve(\n    id="id",\n)\nprint(court.id)',
       },
       java: {
         method: 'courts().retrieve',
@@ -173,25 +165,33 @@ const EMBEDDED_METHODS: MethodEntry[] = [
         example:
           'package com.court_listener_sdk.api.example\n\nimport com.court_listener_sdk.api.client.CourtListenerClient\nimport com.court_listener_sdk.api.client.okhttp.CourtListenerOkHttpClient\nimport com.court_listener_sdk.api.models.courts.Court\nimport com.court_listener_sdk.api.models.courts.CourtRetrieveParams\n\nfun main() {\n    val client: CourtListenerClient = CourtListenerOkHttpClient.fromEnv()\n\n    val court: Court = client.courts().retrieve("id")\n}',
       },
-      php: {
-        method: 'courts->retrieve',
+      go: {
+        method: 'client.Courts.Get',
         example:
-          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$court = $client->courts->retrieve(\n  'id', fields: 'fields', format: 'json', omit: 'omit'\n);\n\nvar_dump($court);",
-      },
-      python: {
-        method: 'courts.retrieve',
-        example:
-          'import os\nfrom court_listener_sdk import CourtListener\n\nclient = CourtListener(\n    api_key=os.environ.get("COURT_LISTENER_API_KEY"),  # This is the default and can be omitted\n)\ncourt = client.courts.retrieve(\n    id="id",\n)\nprint(court.id)',
+          'package main\n\nimport (\n\t"context"\n\t"fmt"\n\n\t"github.com/battements-falaises/court-listener-sdk-go"\n\t"github.com/battements-falaises/court-listener-sdk-go/option"\n)\n\nfunc main() {\n\tclient := courtlistenersdk.NewClient(\n\t\toption.WithAPIKey("My API Key"),\n\t)\n\tcourt, err := client.Courts.Get(\n\t\tcontext.TODO(),\n\t\t"id",\n\t\tcourtlistenersdk.CourtGetParams{},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf("%+v\\n", court.ID)\n}\n',
       },
       ruby: {
         method: 'courts.retrieve',
         example:
           'require "court_listener_sdk"\n\ncourt_listener = CourtListenerSDK::Client.new(api_key: "My API Key")\n\ncourt = court_listener.courts.retrieve("id")\n\nputs(court)',
       },
-      typescript: {
-        method: 'client.courts.retrieve',
+      cli: {
+        method: 'courts retrieve',
+        example: "court-listener-sdk courts retrieve \\\n  --api-key 'My API Key' \\\n  --id id",
+      },
+      php: {
+        method: 'courts->retrieve',
         example:
-          "import CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener({\n  apiKey: process.env['COURT_LISTENER_API_KEY'], // This is the default and can be omitted\n});\n\nconst court = await client.courts.retrieve('id');\n\nconsole.log(court.id);",
+          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$court = $client->courts->retrieve(\n  'id', fields: 'fields', format: 'json', omit: 'omit'\n);\n\nvar_dump($court);",
+      },
+      csharp: {
+        method: 'Courts.Retrieve',
+        example:
+          'CourtRetrieveParams parameters = new() { ID = "id" };\n\nvar court = await client.Courts.Retrieve(parameters);\n\nConsole.WriteLine(court);',
+      },
+      http: {
+        example:
+          'curl https://www.courtlistener.com/api/rest/v4/courts/$ID/ \\\n    -H "Authorization: Bearer $COURT_LISTENER_API_KEY"',
       },
     },
   },
@@ -244,23 +244,15 @@ const EMBEDDED_METHODS: MethodEntry[] = [
     markdown:
       "## list\n\n`client.dockets.list(id?: number, blocked?: boolean, case_name?: string, cause?: string, count?: 'on', court?: string, court__jurisdiction?: string, court__jurisdiction!?: string, cursor?: string, date_created?: string, date_created__gte?: string, date_created__lte?: string, date_filed?: string, date_filed__gte?: string, date_filed__lte?: string, date_modified?: string, date_modified__gte?: string, date_modified__lte?: string, date_terminated?: string, date_terminated__gte?: string, date_terminated__lte?: string, docket_number?: string, fields?: string, format?: 'json' | 'xml' | 'html', id__gt?: number, id__gte?: number, id__lt?: number, id__lte?: number, id__range?: string, nature_of_suit?: string, omit?: string, order_by?: string, page?: number, source?: number): { id?: number; absolute_url?: string; appeal_from?: string; appeal_from_str?: string; appellate_case_type_information?: string; appellate_fee_status?: string; assigned_to?: string; assigned_to_str?: string; audio_files?: string[]; bankruptcy_information?: object; blocked?: boolean; case_name?: string; case_name_full?: string; case_name_short?: string; cause?: string; clusters?: string[]; court?: string; court_id?: string; date_argued?: string; date_blocked?: string; date_cert_denied?: string; date_cert_granted?: string; date_created?: string; date_filed?: string; date_last_filing?: string; date_last_index?: string; date_modified?: string; date_reargued?: string; date_reargument_denied?: string; date_terminated?: string; docket_number?: string; docket_number_core?: string; filepath_ia?: string; filepath_ia_json?: string; ia_date_first_change?: string; ia_needs_upload?: boolean; ia_upload_failure_count?: number; idb_data?: object; jurisdiction_type?: string; jury_demand?: string; mdl_status?: string; nature_of_suit?: string; original_court_info?: object; pacer_case_id?: string; panel?: string[]; panel_str?: string; referred_to?: string; referred_to_str?: string; resource_uri?: string; slug?: string; source?: number; tags?: string[]; }`\n\n**get** `/dockets/`\n\nReturns a paginated list of dockets. Dockets sit at the top of the case law\nhierarchy, linking to clusters of opinions.\n\n**Note**: The response does not inline docket entries, parties, or attorneys\n(this does not scale). Use the PACER/RECAP APIs for those.\n\n\n### Parameters\n\n- `id?: number`\n  Filter by docket ID (exact).\n\n- `blocked?: boolean`\n  Filter for blocked/unblocked dockets.\n\n- `case_name?: string`\n  Filter by case name.\n\n- `cause?: string`\n  Filter by cause.\n\n- `count?: 'on'`\n  Set to `on` to return only the total count of matching items without\nresult data. When enabled, pagination parameters are ignored.\n\n- `court?: string`\n  Filter by court identifier (e.g. `scotus`). Supports related court filters via `court__` prefix.\n\n- `court__jurisdiction?: string`\n  Filter by the court's jurisdiction type (e.g. `F`, `FD`, `S`).\n\n- `court__jurisdiction!?: string`\n  Exclude dockets from this jurisdiction type.\n\n- `cursor?: string`\n  Cursor token for deep pagination. Returned in the `next` / `previous`\nfields of paginated responses. Available when ordering by `id`,\n`date_modified`, or `date_created`.\n\n\n- `date_created?: string`\n  Filter by exact creation date.\n\n- `date_created__gte?: string`\n  Created on or after this date.\n\n- `date_created__lte?: string`\n  Created on or before this date.\n\n- `date_filed?: string`\n  Filter by filing date.\n\n- `date_filed__gte?: string`\n  Filed on or after this date.\n\n- `date_filed__lte?: string`\n  Filed on or before this date.\n\n- `date_modified?: string`\n  Filter by exact modification date.\n\n- `date_modified__gte?: string`\n  Modified on or after this date.\n\n- `date_modified__lte?: string`\n  Modified on or before this date.\n\n- `date_terminated?: string`\n  Filter by termination date.\n\n- `date_terminated__gte?: string`\n\n- `date_terminated__lte?: string`\n\n- `docket_number?: string`\n  Filter by exact docket number (e.g. `23A994`).\n\n- `fields?: string`\n  Comma-separated list of fields to include. Supports nested fields via\ndouble-underscore notation (e.g. `educations__id`).\n\n\n- `format?: 'json' | 'xml' | 'html'`\n  Response serialization format. JSON is default when no `Accept` header\nis provided.\n\n- `id__gt?: number`\n  Docket IDs greater than this value.\n\n- `id__gte?: number`\n  Docket IDs greater than or equal to this value.\n\n- `id__lt?: number`\n  Docket IDs less than this value.\n\n- `id__lte?: number`\n  Docket IDs less than or equal to this value.\n\n- `id__range?: string`\n  Docket IDs within an inclusive range (e.g. `500,1000`).\n\n- `nature_of_suit?: string`\n  Filter by nature of suit.\n\n- `omit?: string`\n  Comma-separated list of fields to exclude. Supports nested fields via\ndouble-underscore notation.\n\n\n- `order_by?: string`\n  Comma-separated list of fields to order by. Prefix with `-` for\ndescending order. Use a secondary field as a tie-breaker for\ndeterministic ordering (e.g. `date_filed,id`).\n\n\n- `page?: number`\n  Page number for standard pagination (limited to 100 pages).\n\n- `source?: number`\n  Filter by docket source.\n\n### Returns\n\n- `{ id?: number; absolute_url?: string; appeal_from?: string; appeal_from_str?: string; appellate_case_type_information?: string; appellate_fee_status?: string; assigned_to?: string; assigned_to_str?: string; audio_files?: string[]; bankruptcy_information?: object; blocked?: boolean; case_name?: string; case_name_full?: string; case_name_short?: string; cause?: string; clusters?: string[]; court?: string; court_id?: string; date_argued?: string; date_blocked?: string; date_cert_denied?: string; date_cert_granted?: string; date_created?: string; date_filed?: string; date_last_filing?: string; date_last_index?: string; date_modified?: string; date_reargued?: string; date_reargument_denied?: string; date_terminated?: string; docket_number?: string; docket_number_core?: string; filepath_ia?: string; filepath_ia_json?: string; ia_date_first_change?: string; ia_needs_upload?: boolean; ia_upload_failure_count?: number; idb_data?: object; jurisdiction_type?: string; jury_demand?: string; mdl_status?: string; nature_of_suit?: string; original_court_info?: object; pacer_case_id?: string; panel?: string[]; panel_str?: string; referred_to?: string; referred_to_str?: string; resource_uri?: string; slug?: string; source?: number; tags?: string[]; }`\n\n  - `id?: number`\n  - `absolute_url?: string`\n  - `appeal_from?: string`\n  - `appeal_from_str?: string`\n  - `appellate_case_type_information?: string`\n  - `appellate_fee_status?: string`\n  - `assigned_to?: string`\n  - `assigned_to_str?: string`\n  - `audio_files?: string[]`\n  - `bankruptcy_information?: object`\n  - `blocked?: boolean`\n  - `case_name?: string`\n  - `case_name_full?: string`\n  - `case_name_short?: string`\n  - `cause?: string`\n  - `clusters?: string[]`\n  - `court?: string`\n  - `court_id?: string`\n  - `date_argued?: string`\n  - `date_blocked?: string`\n  - `date_cert_denied?: string`\n  - `date_cert_granted?: string`\n  - `date_created?: string`\n  - `date_filed?: string`\n  - `date_last_filing?: string`\n  - `date_last_index?: string`\n  - `date_modified?: string`\n  - `date_reargued?: string`\n  - `date_reargument_denied?: string`\n  - `date_terminated?: string`\n  - `docket_number?: string`\n  - `docket_number_core?: string`\n  - `filepath_ia?: string`\n  - `filepath_ia_json?: string`\n  - `ia_date_first_change?: string`\n  - `ia_needs_upload?: boolean`\n  - `ia_upload_failure_count?: number`\n  - `idb_data?: object`\n  - `jurisdiction_type?: string`\n  - `jury_demand?: string`\n  - `mdl_status?: string`\n  - `nature_of_suit?: string`\n  - `original_court_info?: object`\n  - `pacer_case_id?: string`\n  - `panel?: string[]`\n  - `panel_str?: string`\n  - `referred_to?: string`\n  - `referred_to_str?: string`\n  - `resource_uri?: string`\n  - `slug?: string`\n  - `source?: number`\n  - `tags?: string[]`\n\n### Example\n\n```typescript\nimport CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener();\n\n// Automatically fetches more pages as needed.\nfor await (const docket of client.dockets.list()) {\n  console.log(docket);\n}\n```",
     perLanguage: {
-      cli: {
-        method: 'dockets list',
-        example: "court-listener-sdk dockets list \\\n  --api-key 'My API Key'",
-      },
-      csharp: {
-        method: 'Dockets.List',
+      typescript: {
+        method: 'client.dockets.list',
         example:
-          'DocketListParams parameters = new();\n\nvar page = await client.Dockets.List(parameters);\nawait foreach (var item in page.Paginate())\n{\n    Console.WriteLine(item);\n}',
+          "import CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener({\n  apiKey: process.env['COURT_LISTENER_API_KEY'], // This is the default and can be omitted\n});\n\n// Automatically fetches more pages as needed.\nfor await (const docket of client.dockets.list()) {\n  console.log(docket.id);\n}",
       },
-      go: {
-        method: 'client.Dockets.List',
+      python: {
+        method: 'dockets.list',
         example:
-          'package main\n\nimport (\n\t"context"\n\t"fmt"\n\n\t"github.com/battements-falaises/court-listener-sdk-go"\n\t"github.com/battements-falaises/court-listener-sdk-go/option"\n)\n\nfunc main() {\n\tclient := courtlistenersdk.NewClient(\n\t\toption.WithAPIKey("My API Key"),\n\t)\n\tpage, err := client.Dockets.List(context.TODO(), courtlistenersdk.DocketListParams{})\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf("%+v\\n", page)\n}\n',
-      },
-      http: {
-        example:
-          'curl https://www.courtlistener.com/api/rest/v4/dockets/ \\\n    -H "Authorization: Bearer $COURT_LISTENER_API_KEY"',
+          'import os\nfrom court_listener_sdk import CourtListener\n\nclient = CourtListener(\n    api_key=os.environ.get("COURT_LISTENER_API_KEY"),  # This is the default and can be omitted\n)\npage = client.dockets.list()\npage = page.results[0]\nprint(page.id)',
       },
       java: {
         method: 'dockets().list',
@@ -272,25 +264,33 @@ const EMBEDDED_METHODS: MethodEntry[] = [
         example:
           'package com.court_listener_sdk.api.example\n\nimport com.court_listener_sdk.api.client.CourtListenerClient\nimport com.court_listener_sdk.api.client.okhttp.CourtListenerOkHttpClient\nimport com.court_listener_sdk.api.models.dockets.DocketListPage\nimport com.court_listener_sdk.api.models.dockets.DocketListParams\n\nfun main() {\n    val client: CourtListenerClient = CourtListenerOkHttpClient.fromEnv()\n\n    val page: DocketListPage = client.dockets().list()\n}',
       },
-      php: {
-        method: 'dockets->list',
+      go: {
+        method: 'client.Dockets.List',
         example:
-          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$page = $client->dockets->list(\n  id: 0,\n  blocked: true,\n  caseName: 'case_name',\n  cause: 'cause',\n  count: 'on',\n  court: 'court',\n  courtJurisdiction: 'court__jurisdiction',\n  courtJurisdiction: 'court__jurisdiction!',\n  cursor: 'cursor',\n  dateCreated: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateCreatedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateCreatedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateFiled: '2019-12-27',\n  dateFiledGte: '2019-12-27',\n  dateFiledLte: '2019-12-27',\n  dateModified: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateTerminated: '2019-12-27',\n  dateTerminatedGte: '2019-12-27',\n  dateTerminatedLte: '2019-12-27',\n  docketNumber: 'docket_number',\n  fields: 'fields',\n  format: 'json',\n  idGt: 0,\n  idGte: 0,\n  idLt: 0,\n  idLte: 0,\n  idRange: 'id__range',\n  natureOfSuit: 'nature_of_suit',\n  omit: 'omit',\n  orderBy: 'order_by',\n  page: 1,\n  source: 0,\n);\n\nvar_dump($page);",
-      },
-      python: {
-        method: 'dockets.list',
-        example:
-          'import os\nfrom court_listener_sdk import CourtListener\n\nclient = CourtListener(\n    api_key=os.environ.get("COURT_LISTENER_API_KEY"),  # This is the default and can be omitted\n)\npage = client.dockets.list()\npage = page.results[0]\nprint(page.id)',
+          'package main\n\nimport (\n\t"context"\n\t"fmt"\n\n\t"github.com/battements-falaises/court-listener-sdk-go"\n\t"github.com/battements-falaises/court-listener-sdk-go/option"\n)\n\nfunc main() {\n\tclient := courtlistenersdk.NewClient(\n\t\toption.WithAPIKey("My API Key"),\n\t)\n\tpage, err := client.Dockets.List(context.TODO(), courtlistenersdk.DocketListParams{})\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf("%+v\\n", page)\n}\n',
       },
       ruby: {
         method: 'dockets.list',
         example:
           'require "court_listener_sdk"\n\ncourt_listener = CourtListenerSDK::Client.new(api_key: "My API Key")\n\npage = court_listener.dockets.list\n\nputs(page)',
       },
-      typescript: {
-        method: 'client.dockets.list',
+      cli: {
+        method: 'dockets list',
+        example: "court-listener-sdk dockets list \\\n  --api-key 'My API Key'",
+      },
+      php: {
+        method: 'dockets->list',
         example:
-          "import CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener({\n  apiKey: process.env['COURT_LISTENER_API_KEY'], // This is the default and can be omitted\n});\n\n// Automatically fetches more pages as needed.\nfor await (const docket of client.dockets.list()) {\n  console.log(docket.id);\n}",
+          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$page = $client->dockets->list(\n  id: 0,\n  blocked: true,\n  caseName: 'case_name',\n  cause: 'cause',\n  count: 'on',\n  court: 'court',\n  courtJurisdiction: 'court__jurisdiction',\n  courtJurisdiction: 'court__jurisdiction!',\n  cursor: 'cursor',\n  dateCreated: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateCreatedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateCreatedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateFiled: '2019-12-27',\n  dateFiledGte: '2019-12-27',\n  dateFiledLte: '2019-12-27',\n  dateModified: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateTerminated: '2019-12-27',\n  dateTerminatedGte: '2019-12-27',\n  dateTerminatedLte: '2019-12-27',\n  docketNumber: 'docket_number',\n  fields: 'fields',\n  format: 'json',\n  idGt: 0,\n  idGte: 0,\n  idLt: 0,\n  idLte: 0,\n  idRange: 'id__range',\n  natureOfSuit: 'nature_of_suit',\n  omit: 'omit',\n  orderBy: 'order_by',\n  page: 1,\n  source: 0,\n);\n\nvar_dump($page);",
+      },
+      csharp: {
+        method: 'Dockets.List',
+        example:
+          'DocketListParams parameters = new();\n\nvar page = await client.Dockets.List(parameters);\nawait foreach (var item in page.Paginate())\n{\n    Console.WriteLine(item);\n}',
+      },
+      http: {
+        example:
+          'curl https://www.courtlistener.com/api/rest/v4/dockets/ \\\n    -H "Authorization: Bearer $COURT_LISTENER_API_KEY"',
       },
     },
   },
@@ -307,23 +307,15 @@ const EMBEDDED_METHODS: MethodEntry[] = [
     markdown:
       "## retrieve\n\n`client.dockets.retrieve(id: number, fields?: string, format?: 'json' | 'xml' | 'html', omit?: string): { id?: number; absolute_url?: string; appeal_from?: string; appeal_from_str?: string; appellate_case_type_information?: string; appellate_fee_status?: string; assigned_to?: string; assigned_to_str?: string; audio_files?: string[]; bankruptcy_information?: object; blocked?: boolean; case_name?: string; case_name_full?: string; case_name_short?: string; cause?: string; clusters?: string[]; court?: string; court_id?: string; date_argued?: string; date_blocked?: string; date_cert_denied?: string; date_cert_granted?: string; date_created?: string; date_filed?: string; date_last_filing?: string; date_last_index?: string; date_modified?: string; date_reargued?: string; date_reargument_denied?: string; date_terminated?: string; docket_number?: string; docket_number_core?: string; filepath_ia?: string; filepath_ia_json?: string; ia_date_first_change?: string; ia_needs_upload?: boolean; ia_upload_failure_count?: number; idb_data?: object; jurisdiction_type?: string; jury_demand?: string; mdl_status?: string; nature_of_suit?: string; original_court_info?: object; pacer_case_id?: string; panel?: string[]; panel_str?: string; referred_to?: string; referred_to_str?: string; resource_uri?: string; slug?: string; source?: number; tags?: string[]; }`\n\n**get** `/dockets/{id}/`\n\nRetrieve a single docket\n\n### Parameters\n\n- `id: number`\n\n- `fields?: string`\n  Comma-separated list of fields to include. Supports nested fields via\ndouble-underscore notation (e.g. `educations__id`).\n\n\n- `format?: 'json' | 'xml' | 'html'`\n  Response serialization format. JSON is default when no `Accept` header\nis provided.\n\n- `omit?: string`\n  Comma-separated list of fields to exclude. Supports nested fields via\ndouble-underscore notation.\n\n\n### Returns\n\n- `{ id?: number; absolute_url?: string; appeal_from?: string; appeal_from_str?: string; appellate_case_type_information?: string; appellate_fee_status?: string; assigned_to?: string; assigned_to_str?: string; audio_files?: string[]; bankruptcy_information?: object; blocked?: boolean; case_name?: string; case_name_full?: string; case_name_short?: string; cause?: string; clusters?: string[]; court?: string; court_id?: string; date_argued?: string; date_blocked?: string; date_cert_denied?: string; date_cert_granted?: string; date_created?: string; date_filed?: string; date_last_filing?: string; date_last_index?: string; date_modified?: string; date_reargued?: string; date_reargument_denied?: string; date_terminated?: string; docket_number?: string; docket_number_core?: string; filepath_ia?: string; filepath_ia_json?: string; ia_date_first_change?: string; ia_needs_upload?: boolean; ia_upload_failure_count?: number; idb_data?: object; jurisdiction_type?: string; jury_demand?: string; mdl_status?: string; nature_of_suit?: string; original_court_info?: object; pacer_case_id?: string; panel?: string[]; panel_str?: string; referred_to?: string; referred_to_str?: string; resource_uri?: string; slug?: string; source?: number; tags?: string[]; }`\n\n  - `id?: number`\n  - `absolute_url?: string`\n  - `appeal_from?: string`\n  - `appeal_from_str?: string`\n  - `appellate_case_type_information?: string`\n  - `appellate_fee_status?: string`\n  - `assigned_to?: string`\n  - `assigned_to_str?: string`\n  - `audio_files?: string[]`\n  - `bankruptcy_information?: object`\n  - `blocked?: boolean`\n  - `case_name?: string`\n  - `case_name_full?: string`\n  - `case_name_short?: string`\n  - `cause?: string`\n  - `clusters?: string[]`\n  - `court?: string`\n  - `court_id?: string`\n  - `date_argued?: string`\n  - `date_blocked?: string`\n  - `date_cert_denied?: string`\n  - `date_cert_granted?: string`\n  - `date_created?: string`\n  - `date_filed?: string`\n  - `date_last_filing?: string`\n  - `date_last_index?: string`\n  - `date_modified?: string`\n  - `date_reargued?: string`\n  - `date_reargument_denied?: string`\n  - `date_terminated?: string`\n  - `docket_number?: string`\n  - `docket_number_core?: string`\n  - `filepath_ia?: string`\n  - `filepath_ia_json?: string`\n  - `ia_date_first_change?: string`\n  - `ia_needs_upload?: boolean`\n  - `ia_upload_failure_count?: number`\n  - `idb_data?: object`\n  - `jurisdiction_type?: string`\n  - `jury_demand?: string`\n  - `mdl_status?: string`\n  - `nature_of_suit?: string`\n  - `original_court_info?: object`\n  - `pacer_case_id?: string`\n  - `panel?: string[]`\n  - `panel_str?: string`\n  - `referred_to?: string`\n  - `referred_to_str?: string`\n  - `resource_uri?: string`\n  - `slug?: string`\n  - `source?: number`\n  - `tags?: string[]`\n\n### Example\n\n```typescript\nimport CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener();\n\nconst docket = await client.dockets.retrieve(0);\n\nconsole.log(docket);\n```",
     perLanguage: {
-      cli: {
-        method: 'dockets retrieve',
-        example: "court-listener-sdk dockets retrieve \\\n  --api-key 'My API Key' \\\n  --id 0",
-      },
-      csharp: {
-        method: 'Dockets.Retrieve',
+      typescript: {
+        method: 'client.dockets.retrieve',
         example:
-          'DocketRetrieveParams parameters = new() { ID = 0 };\n\nvar docket = await client.Dockets.Retrieve(parameters);\n\nConsole.WriteLine(docket);',
+          "import CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener({\n  apiKey: process.env['COURT_LISTENER_API_KEY'], // This is the default and can be omitted\n});\n\nconst docket = await client.dockets.retrieve(0);\n\nconsole.log(docket.id);",
       },
-      go: {
-        method: 'client.Dockets.Get',
+      python: {
+        method: 'dockets.retrieve',
         example:
-          'package main\n\nimport (\n\t"context"\n\t"fmt"\n\n\t"github.com/battements-falaises/court-listener-sdk-go"\n\t"github.com/battements-falaises/court-listener-sdk-go/option"\n)\n\nfunc main() {\n\tclient := courtlistenersdk.NewClient(\n\t\toption.WithAPIKey("My API Key"),\n\t)\n\tdocket, err := client.Dockets.Get(\n\t\tcontext.TODO(),\n\t\t0,\n\t\tcourtlistenersdk.DocketGetParams{},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf("%+v\\n", docket.ID)\n}\n',
-      },
-      http: {
-        example:
-          'curl https://www.courtlistener.com/api/rest/v4/dockets/$ID/ \\\n    -H "Authorization: Bearer $COURT_LISTENER_API_KEY"',
+          'import os\nfrom court_listener_sdk import CourtListener\n\nclient = CourtListener(\n    api_key=os.environ.get("COURT_LISTENER_API_KEY"),  # This is the default and can be omitted\n)\ndocket = client.dockets.retrieve(\n    id=0,\n)\nprint(docket.id)',
       },
       java: {
         method: 'dockets().retrieve',
@@ -335,25 +327,33 @@ const EMBEDDED_METHODS: MethodEntry[] = [
         example:
           'package com.court_listener_sdk.api.example\n\nimport com.court_listener_sdk.api.client.CourtListenerClient\nimport com.court_listener_sdk.api.client.okhttp.CourtListenerOkHttpClient\nimport com.court_listener_sdk.api.models.dockets.Docket\nimport com.court_listener_sdk.api.models.dockets.DocketRetrieveParams\n\nfun main() {\n    val client: CourtListenerClient = CourtListenerOkHttpClient.fromEnv()\n\n    val docket: Docket = client.dockets().retrieve(0L)\n}',
       },
-      php: {
-        method: 'dockets->retrieve',
+      go: {
+        method: 'client.Dockets.Get',
         example:
-          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$docket = $client->dockets->retrieve(\n  0, fields: 'fields', format: 'json', omit: 'omit'\n);\n\nvar_dump($docket);",
-      },
-      python: {
-        method: 'dockets.retrieve',
-        example:
-          'import os\nfrom court_listener_sdk import CourtListener\n\nclient = CourtListener(\n    api_key=os.environ.get("COURT_LISTENER_API_KEY"),  # This is the default and can be omitted\n)\ndocket = client.dockets.retrieve(\n    id=0,\n)\nprint(docket.id)',
+          'package main\n\nimport (\n\t"context"\n\t"fmt"\n\n\t"github.com/battements-falaises/court-listener-sdk-go"\n\t"github.com/battements-falaises/court-listener-sdk-go/option"\n)\n\nfunc main() {\n\tclient := courtlistenersdk.NewClient(\n\t\toption.WithAPIKey("My API Key"),\n\t)\n\tdocket, err := client.Dockets.Get(\n\t\tcontext.TODO(),\n\t\t0,\n\t\tcourtlistenersdk.DocketGetParams{},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf("%+v\\n", docket.ID)\n}\n',
       },
       ruby: {
         method: 'dockets.retrieve',
         example:
           'require "court_listener_sdk"\n\ncourt_listener = CourtListenerSDK::Client.new(api_key: "My API Key")\n\ndocket = court_listener.dockets.retrieve(0)\n\nputs(docket)',
       },
-      typescript: {
-        method: 'client.dockets.retrieve',
+      cli: {
+        method: 'dockets retrieve',
+        example: "court-listener-sdk dockets retrieve \\\n  --api-key 'My API Key' \\\n  --id 0",
+      },
+      php: {
+        method: 'dockets->retrieve',
         example:
-          "import CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener({\n  apiKey: process.env['COURT_LISTENER_API_KEY'], // This is the default and can be omitted\n});\n\nconst docket = await client.dockets.retrieve(0);\n\nconsole.log(docket.id);",
+          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$docket = $client->dockets->retrieve(\n  0, fields: 'fields', format: 'json', omit: 'omit'\n);\n\nvar_dump($docket);",
+      },
+      csharp: {
+        method: 'Dockets.Retrieve',
+        example:
+          'DocketRetrieveParams parameters = new() { ID = 0 };\n\nvar docket = await client.Dockets.Retrieve(parameters);\n\nConsole.WriteLine(docket);',
+      },
+      http: {
+        example:
+          'curl https://www.courtlistener.com/api/rest/v4/dockets/$ID/ \\\n    -H "Authorization: Bearer $COURT_LISTENER_API_KEY"',
       },
     },
   },
@@ -400,23 +400,15 @@ const EMBEDDED_METHODS: MethodEntry[] = [
     markdown:
       "## list\n\n`client.clusters.list(id?: number, citation?: string, count?: 'on', cursor?: string, date_created?: string, date_created__gte?: string, date_created__lte?: string, date_filed?: string, date_filed__gte?: string, date_filed__lte?: string, date_modified?: string, date_modified__gte?: string, date_modified__lte?: string, docket?: number, docket__court?: string, docket__docket_number?: string, fields?: string, format?: 'json' | 'xml' | 'html', id__gt?: number, id__gte?: number, id__lt?: number, id__lte?: number, id__range?: string, judges?: string, omit?: string, order_by?: string, page?: number): { id?: number; absolute_url?: string; blocked?: boolean; case_name?: string; case_name_full?: string; case_name_short?: string; citation_count?: number; citations?: object[]; correction?: string; cross_reference?: string; date_blocked?: string; date_created?: string; date_filed?: string; date_filed_is_approximate?: boolean; date_modified?: string; disposition?: string; docket?: string; headnotes?: string; history?: string; judges?: string; non_participating_judges?: string[]; other_dates?: string; panel?: string[]; precedential_status?: string; resource_uri?: string; slug?: string; source?: string; sub_opinions?: string[]; summary?: string; syllabus?: string; }`\n\n**get** `/clusters/`\n\nReturns a paginated list of opinion clusters. Each cluster groups together\nopinions from the same panel hearing (e.g. majority, dissent, concurrence).\nThe cluster `id` is used in CourtListener case law URLs.\n\n\n### Parameters\n\n- `id?: number`\n  Filter by cluster ID.\n\n- `citation?: string`\n  Filter by citation.\n\n- `count?: 'on'`\n  Set to `on` to return only the total count of matching items without\nresult data. When enabled, pagination parameters are ignored.\n\n- `cursor?: string`\n  Cursor token for deep pagination. Returned in the `next` / `previous`\nfields of paginated responses. Available when ordering by `id`,\n`date_modified`, or `date_created`.\n\n\n- `date_created?: string`\n\n- `date_created__gte?: string`\n\n- `date_created__lte?: string`\n\n- `date_filed?: string`\n  Filter by the date the cluster was filed.\n\n- `date_filed__gte?: string`\n\n- `date_filed__lte?: string`\n\n- `date_modified?: string`\n\n- `date_modified__gte?: string`\n\n- `date_modified__lte?: string`\n\n- `docket?: number`\n  Filter by parent docket ID.\n\n- `docket__court?: string`\n  Filter by the court of the parent docket (e.g. `scotus`).\n\n- `docket__docket_number?: string`\n  Filter by the docket number of the parent docket.\n\n- `fields?: string`\n  Comma-separated list of fields to include. Supports nested fields via\ndouble-underscore notation (e.g. `educations__id`).\n\n\n- `format?: 'json' | 'xml' | 'html'`\n  Response serialization format. JSON is default when no `Accept` header\nis provided.\n\n- `id__gt?: number`\n\n- `id__gte?: number`\n\n- `id__lt?: number`\n\n- `id__lte?: number`\n\n- `id__range?: string`\n  Inclusive range (e.g. `100,500`).\n\n- `judges?: string`\n  Filter by judge name string.\n\n- `omit?: string`\n  Comma-separated list of fields to exclude. Supports nested fields via\ndouble-underscore notation.\n\n\n- `order_by?: string`\n  Comma-separated list of fields to order by. Prefix with `-` for\ndescending order. Use a secondary field as a tie-breaker for\ndeterministic ordering (e.g. `date_filed,id`).\n\n\n- `page?: number`\n  Page number for standard pagination (limited to 100 pages).\n\n### Returns\n\n- `{ id?: number; absolute_url?: string; blocked?: boolean; case_name?: string; case_name_full?: string; case_name_short?: string; citation_count?: number; citations?: { page?: string; reporter?: string; type?: number; volume?: number; }[]; correction?: string; cross_reference?: string; date_blocked?: string; date_created?: string; date_filed?: string; date_filed_is_approximate?: boolean; date_modified?: string; disposition?: string; docket?: string; headnotes?: string; history?: string; judges?: string; non_participating_judges?: string[]; other_dates?: string; panel?: string[]; precedential_status?: string; resource_uri?: string; slug?: string; source?: string; sub_opinions?: string[]; summary?: string; syllabus?: string; }`\n\n  - `id?: number`\n  - `absolute_url?: string`\n  - `blocked?: boolean`\n  - `case_name?: string`\n  - `case_name_full?: string`\n  - `case_name_short?: string`\n  - `citation_count?: number`\n  - `citations?: { page?: string; reporter?: string; type?: number; volume?: number; }[]`\n  - `correction?: string`\n  - `cross_reference?: string`\n  - `date_blocked?: string`\n  - `date_created?: string`\n  - `date_filed?: string`\n  - `date_filed_is_approximate?: boolean`\n  - `date_modified?: string`\n  - `disposition?: string`\n  - `docket?: string`\n  - `headnotes?: string`\n  - `history?: string`\n  - `judges?: string`\n  - `non_participating_judges?: string[]`\n  - `other_dates?: string`\n  - `panel?: string[]`\n  - `precedential_status?: string`\n  - `resource_uri?: string`\n  - `slug?: string`\n  - `source?: string`\n  - `sub_opinions?: string[]`\n  - `summary?: string`\n  - `syllabus?: string`\n\n### Example\n\n```typescript\nimport CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener();\n\n// Automatically fetches more pages as needed.\nfor await (const cluster of client.clusters.list()) {\n  console.log(cluster);\n}\n```",
     perLanguage: {
-      cli: {
-        method: 'clusters list',
-        example: "court-listener-sdk clusters list \\\n  --api-key 'My API Key'",
-      },
-      csharp: {
-        method: 'Clusters.List',
+      typescript: {
+        method: 'client.clusters.list',
         example:
-          'ClusterListParams parameters = new();\n\nvar page = await client.Clusters.List(parameters);\nawait foreach (var item in page.Paginate())\n{\n    Console.WriteLine(item);\n}',
+          "import CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener({\n  apiKey: process.env['COURT_LISTENER_API_KEY'], // This is the default and can be omitted\n});\n\n// Automatically fetches more pages as needed.\nfor await (const cluster of client.clusters.list()) {\n  console.log(cluster.id);\n}",
       },
-      go: {
-        method: 'client.Clusters.List',
+      python: {
+        method: 'clusters.list',
         example:
-          'package main\n\nimport (\n\t"context"\n\t"fmt"\n\n\t"github.com/battements-falaises/court-listener-sdk-go"\n\t"github.com/battements-falaises/court-listener-sdk-go/option"\n)\n\nfunc main() {\n\tclient := courtlistenersdk.NewClient(\n\t\toption.WithAPIKey("My API Key"),\n\t)\n\tpage, err := client.Clusters.List(context.TODO(), courtlistenersdk.ClusterListParams{})\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf("%+v\\n", page)\n}\n',
-      },
-      http: {
-        example:
-          'curl https://www.courtlistener.com/api/rest/v4/clusters/ \\\n    -H "Authorization: Bearer $COURT_LISTENER_API_KEY"',
+          'import os\nfrom court_listener_sdk import CourtListener\n\nclient = CourtListener(\n    api_key=os.environ.get("COURT_LISTENER_API_KEY"),  # This is the default and can be omitted\n)\npage = client.clusters.list()\npage = page.results[0]\nprint(page.id)',
       },
       java: {
         method: 'clusters().list',
@@ -428,25 +420,33 @@ const EMBEDDED_METHODS: MethodEntry[] = [
         example:
           'package com.court_listener_sdk.api.example\n\nimport com.court_listener_sdk.api.client.CourtListenerClient\nimport com.court_listener_sdk.api.client.okhttp.CourtListenerOkHttpClient\nimport com.court_listener_sdk.api.models.clusters.ClusterListPage\nimport com.court_listener_sdk.api.models.clusters.ClusterListParams\n\nfun main() {\n    val client: CourtListenerClient = CourtListenerOkHttpClient.fromEnv()\n\n    val page: ClusterListPage = client.clusters().list()\n}',
       },
-      php: {
-        method: 'clusters->list',
+      go: {
+        method: 'client.Clusters.List',
         example:
-          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$page = $client->clusters->list(\n  id: 0,\n  citation: 'citation',\n  count: 'on',\n  cursor: 'cursor',\n  dateCreated: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateCreatedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateCreatedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateFiled: '2019-12-27',\n  dateFiledGte: '2019-12-27',\n  dateFiledLte: '2019-12-27',\n  dateModified: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  docket: 0,\n  docketCourt: 'docket__court',\n  docketDocketNumber: 'docket__docket_number',\n  fields: 'fields',\n  format: 'json',\n  idGt: 0,\n  idGte: 0,\n  idLt: 0,\n  idLte: 0,\n  idRange: 'id__range',\n  judges: 'judges',\n  omit: 'omit',\n  orderBy: 'order_by',\n  page: 1,\n);\n\nvar_dump($page);",
-      },
-      python: {
-        method: 'clusters.list',
-        example:
-          'import os\nfrom court_listener_sdk import CourtListener\n\nclient = CourtListener(\n    api_key=os.environ.get("COURT_LISTENER_API_KEY"),  # This is the default and can be omitted\n)\npage = client.clusters.list()\npage = page.results[0]\nprint(page.id)',
+          'package main\n\nimport (\n\t"context"\n\t"fmt"\n\n\t"github.com/battements-falaises/court-listener-sdk-go"\n\t"github.com/battements-falaises/court-listener-sdk-go/option"\n)\n\nfunc main() {\n\tclient := courtlistenersdk.NewClient(\n\t\toption.WithAPIKey("My API Key"),\n\t)\n\tpage, err := client.Clusters.List(context.TODO(), courtlistenersdk.ClusterListParams{})\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf("%+v\\n", page)\n}\n',
       },
       ruby: {
         method: 'clusters.list',
         example:
           'require "court_listener_sdk"\n\ncourt_listener = CourtListenerSDK::Client.new(api_key: "My API Key")\n\npage = court_listener.clusters.list\n\nputs(page)',
       },
-      typescript: {
-        method: 'client.clusters.list',
+      cli: {
+        method: 'clusters list',
+        example: "court-listener-sdk clusters list \\\n  --api-key 'My API Key'",
+      },
+      php: {
+        method: 'clusters->list',
         example:
-          "import CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener({\n  apiKey: process.env['COURT_LISTENER_API_KEY'], // This is the default and can be omitted\n});\n\n// Automatically fetches more pages as needed.\nfor await (const cluster of client.clusters.list()) {\n  console.log(cluster.id);\n}",
+          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$page = $client->clusters->list(\n  id: 0,\n  citation: 'citation',\n  count: 'on',\n  cursor: 'cursor',\n  dateCreated: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateCreatedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateCreatedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateFiled: '2019-12-27',\n  dateFiledGte: '2019-12-27',\n  dateFiledLte: '2019-12-27',\n  dateModified: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  docket: 0,\n  docketCourt: 'docket__court',\n  docketDocketNumber: 'docket__docket_number',\n  fields: 'fields',\n  format: 'json',\n  idGt: 0,\n  idGte: 0,\n  idLt: 0,\n  idLte: 0,\n  idRange: 'id__range',\n  judges: 'judges',\n  omit: 'omit',\n  orderBy: 'order_by',\n  page: 1,\n);\n\nvar_dump($page);",
+      },
+      csharp: {
+        method: 'Clusters.List',
+        example:
+          'ClusterListParams parameters = new();\n\nvar page = await client.Clusters.List(parameters);\nawait foreach (var item in page.Paginate())\n{\n    Console.WriteLine(item);\n}',
+      },
+      http: {
+        example:
+          'curl https://www.courtlistener.com/api/rest/v4/clusters/ \\\n    -H "Authorization: Bearer $COURT_LISTENER_API_KEY"',
       },
     },
   },
@@ -465,23 +465,15 @@ const EMBEDDED_METHODS: MethodEntry[] = [
     markdown:
       "## retrieve\n\n`client.clusters.retrieve(id: number, fields?: string, format?: 'json' | 'xml' | 'html', omit?: string): { id?: number; absolute_url?: string; blocked?: boolean; case_name?: string; case_name_full?: string; case_name_short?: string; citation_count?: number; citations?: object[]; correction?: string; cross_reference?: string; date_blocked?: string; date_created?: string; date_filed?: string; date_filed_is_approximate?: boolean; date_modified?: string; disposition?: string; docket?: string; headnotes?: string; history?: string; judges?: string; non_participating_judges?: string[]; other_dates?: string; panel?: string[]; precedential_status?: string; resource_uri?: string; slug?: string; source?: string; sub_opinions?: string[]; summary?: string; syllabus?: string; }`\n\n**get** `/clusters/{id}/`\n\nLook up a cluster by its ID. The cluster ID matches the ID used in\nCourtListener case law URLs (e.g. `/opinion/2812209/obergefell-v-hodges/`\ncorresponds to cluster ID `2812209`).\n\n\n### Parameters\n\n- `id: number`\n\n- `fields?: string`\n  Comma-separated list of fields to include. Supports nested fields via\ndouble-underscore notation (e.g. `educations__id`).\n\n\n- `format?: 'json' | 'xml' | 'html'`\n  Response serialization format. JSON is default when no `Accept` header\nis provided.\n\n- `omit?: string`\n  Comma-separated list of fields to exclude. Supports nested fields via\ndouble-underscore notation.\n\n\n### Returns\n\n- `{ id?: number; absolute_url?: string; blocked?: boolean; case_name?: string; case_name_full?: string; case_name_short?: string; citation_count?: number; citations?: { page?: string; reporter?: string; type?: number; volume?: number; }[]; correction?: string; cross_reference?: string; date_blocked?: string; date_created?: string; date_filed?: string; date_filed_is_approximate?: boolean; date_modified?: string; disposition?: string; docket?: string; headnotes?: string; history?: string; judges?: string; non_participating_judges?: string[]; other_dates?: string; panel?: string[]; precedential_status?: string; resource_uri?: string; slug?: string; source?: string; sub_opinions?: string[]; summary?: string; syllabus?: string; }`\n\n  - `id?: number`\n  - `absolute_url?: string`\n  - `blocked?: boolean`\n  - `case_name?: string`\n  - `case_name_full?: string`\n  - `case_name_short?: string`\n  - `citation_count?: number`\n  - `citations?: { page?: string; reporter?: string; type?: number; volume?: number; }[]`\n  - `correction?: string`\n  - `cross_reference?: string`\n  - `date_blocked?: string`\n  - `date_created?: string`\n  - `date_filed?: string`\n  - `date_filed_is_approximate?: boolean`\n  - `date_modified?: string`\n  - `disposition?: string`\n  - `docket?: string`\n  - `headnotes?: string`\n  - `history?: string`\n  - `judges?: string`\n  - `non_participating_judges?: string[]`\n  - `other_dates?: string`\n  - `panel?: string[]`\n  - `precedential_status?: string`\n  - `resource_uri?: string`\n  - `slug?: string`\n  - `source?: string`\n  - `sub_opinions?: string[]`\n  - `summary?: string`\n  - `syllabus?: string`\n\n### Example\n\n```typescript\nimport CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener();\n\nconst cluster = await client.clusters.retrieve(0);\n\nconsole.log(cluster);\n```",
     perLanguage: {
-      cli: {
-        method: 'clusters retrieve',
-        example: "court-listener-sdk clusters retrieve \\\n  --api-key 'My API Key' \\\n  --id 0",
-      },
-      csharp: {
-        method: 'Clusters.Retrieve',
+      typescript: {
+        method: 'client.clusters.retrieve',
         example:
-          'ClusterRetrieveParams parameters = new() { ID = 0 };\n\nvar cluster = await client.Clusters.Retrieve(parameters);\n\nConsole.WriteLine(cluster);',
+          "import CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener({\n  apiKey: process.env['COURT_LISTENER_API_KEY'], // This is the default and can be omitted\n});\n\nconst cluster = await client.clusters.retrieve(0);\n\nconsole.log(cluster.id);",
       },
-      go: {
-        method: 'client.Clusters.Get',
+      python: {
+        method: 'clusters.retrieve',
         example:
-          'package main\n\nimport (\n\t"context"\n\t"fmt"\n\n\t"github.com/battements-falaises/court-listener-sdk-go"\n\t"github.com/battements-falaises/court-listener-sdk-go/option"\n)\n\nfunc main() {\n\tclient := courtlistenersdk.NewClient(\n\t\toption.WithAPIKey("My API Key"),\n\t)\n\tcluster, err := client.Clusters.Get(\n\t\tcontext.TODO(),\n\t\t0,\n\t\tcourtlistenersdk.ClusterGetParams{},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf("%+v\\n", cluster.ID)\n}\n',
-      },
-      http: {
-        example:
-          'curl https://www.courtlistener.com/api/rest/v4/clusters/$ID/ \\\n    -H "Authorization: Bearer $COURT_LISTENER_API_KEY"',
+          'import os\nfrom court_listener_sdk import CourtListener\n\nclient = CourtListener(\n    api_key=os.environ.get("COURT_LISTENER_API_KEY"),  # This is the default and can be omitted\n)\ncluster = client.clusters.retrieve(\n    id=0,\n)\nprint(cluster.id)',
       },
       java: {
         method: 'clusters().retrieve',
@@ -493,25 +485,33 @@ const EMBEDDED_METHODS: MethodEntry[] = [
         example:
           'package com.court_listener_sdk.api.example\n\nimport com.court_listener_sdk.api.client.CourtListenerClient\nimport com.court_listener_sdk.api.client.okhttp.CourtListenerOkHttpClient\nimport com.court_listener_sdk.api.models.clusters.Cluster\nimport com.court_listener_sdk.api.models.clusters.ClusterRetrieveParams\n\nfun main() {\n    val client: CourtListenerClient = CourtListenerOkHttpClient.fromEnv()\n\n    val cluster: Cluster = client.clusters().retrieve(0L)\n}',
       },
-      php: {
-        method: 'clusters->retrieve',
+      go: {
+        method: 'client.Clusters.Get',
         example:
-          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$cluster = $client->clusters->retrieve(\n  0, fields: 'fields', format: 'json', omit: 'omit'\n);\n\nvar_dump($cluster);",
-      },
-      python: {
-        method: 'clusters.retrieve',
-        example:
-          'import os\nfrom court_listener_sdk import CourtListener\n\nclient = CourtListener(\n    api_key=os.environ.get("COURT_LISTENER_API_KEY"),  # This is the default and can be omitted\n)\ncluster = client.clusters.retrieve(\n    id=0,\n)\nprint(cluster.id)',
+          'package main\n\nimport (\n\t"context"\n\t"fmt"\n\n\t"github.com/battements-falaises/court-listener-sdk-go"\n\t"github.com/battements-falaises/court-listener-sdk-go/option"\n)\n\nfunc main() {\n\tclient := courtlistenersdk.NewClient(\n\t\toption.WithAPIKey("My API Key"),\n\t)\n\tcluster, err := client.Clusters.Get(\n\t\tcontext.TODO(),\n\t\t0,\n\t\tcourtlistenersdk.ClusterGetParams{},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf("%+v\\n", cluster.ID)\n}\n',
       },
       ruby: {
         method: 'clusters.retrieve',
         example:
           'require "court_listener_sdk"\n\ncourt_listener = CourtListenerSDK::Client.new(api_key: "My API Key")\n\ncluster = court_listener.clusters.retrieve(0)\n\nputs(cluster)',
       },
-      typescript: {
-        method: 'client.clusters.retrieve',
+      cli: {
+        method: 'clusters retrieve',
+        example: "court-listener-sdk clusters retrieve \\\n  --api-key 'My API Key' \\\n  --id 0",
+      },
+      php: {
+        method: 'clusters->retrieve',
         example:
-          "import CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener({\n  apiKey: process.env['COURT_LISTENER_API_KEY'], // This is the default and can be omitted\n});\n\nconst cluster = await client.clusters.retrieve(0);\n\nconsole.log(cluster.id);",
+          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$cluster = $client->clusters->retrieve(\n  0, fields: 'fields', format: 'json', omit: 'omit'\n);\n\nvar_dump($cluster);",
+      },
+      csharp: {
+        method: 'Clusters.Retrieve',
+        example:
+          'ClusterRetrieveParams parameters = new() { ID = 0 };\n\nvar cluster = await client.Clusters.Retrieve(parameters);\n\nConsole.WriteLine(cluster);',
+      },
+      http: {
+        example:
+          'curl https://www.courtlistener.com/api/rest/v4/clusters/$ID/ \\\n    -H "Authorization: Bearer $COURT_LISTENER_API_KEY"',
       },
     },
   },
@@ -555,23 +555,15 @@ const EMBEDDED_METHODS: MethodEntry[] = [
     markdown:
       "## list\n\n`client.opinions.list(id?: number, cited_opinion?: number, cluster?: number, cluster__docket__court?: string, cluster__docket__docket_number?: string, count?: 'on', cursor?: string, date_created?: string, date_created__gte?: string, date_created__lte?: string, date_modified?: string, date_modified__gte?: string, date_modified__lte?: string, fields?: string, format?: 'json' | 'xml' | 'html', id__gt?: number, id__gte?: number, id__lt?: number, id__lte?: number, id__range?: string, omit?: string, order_by?: string, page?: number, type?: string): { id?: number; author?: string; author_str?: string; cluster?: string; date_created?: string; date_modified?: string; download_url?: string; extracted_by_ocr?: boolean; html?: string; html_anon_2020?: string; html_columbia?: string; html_lawbox?: string; html_with_citations?: string; joined_by?: string[]; local_path?: string; opinions_cited?: string[]; ordering_key?: number; per_curiam?: boolean; plain_text?: string; resource_uri?: string; sha1?: string; type?: string; xml_harvard?: string; }`\n\n**get** `/opinions/`\n\nReturns a paginated list of opinions. Each opinion contains the text of a\njudicial decision and metadata about the authoring judge.\n\n**Tip**: Prefer the `html_with_citations` field for opinion text — it contains\nthe raw text with identified and linked citations, and is the field used on\nthe CourtListener website.\n\nUse `fields` / `omit` parameters to exclude large text fields you don't need.\n\n\n### Parameters\n\n- `id?: number`\n  Filter by opinion ID.\n\n- `cited_opinion?: number`\n  Filter opinions that cite this opinion ID.\n\n- `cluster?: number`\n  Filter by parent cluster ID.\n\n- `cluster__docket__court?: string`\n  Filter by court via the cluster's docket (e.g. `scotus`).\n\n- `cluster__docket__docket_number?: string`\n  Filter by docket number via the cluster's docket.\n\n- `count?: 'on'`\n  Set to `on` to return only the total count of matching items without\nresult data. When enabled, pagination parameters are ignored.\n\n- `cursor?: string`\n  Cursor token for deep pagination. Returned in the `next` / `previous`\nfields of paginated responses. Available when ordering by `id`,\n`date_modified`, or `date_created`.\n\n\n- `date_created?: string`\n\n- `date_created__gte?: string`\n\n- `date_created__lte?: string`\n\n- `date_modified?: string`\n\n- `date_modified__gte?: string`\n\n- `date_modified__lte?: string`\n\n- `fields?: string`\n  Comma-separated list of fields to include. Supports nested fields via\ndouble-underscore notation (e.g. `educations__id`).\n\n\n- `format?: 'json' | 'xml' | 'html'`\n  Response serialization format. JSON is default when no `Accept` header\nis provided.\n\n- `id__gt?: number`\n\n- `id__gte?: number`\n\n- `id__lt?: number`\n\n- `id__lte?: number`\n\n- `id__range?: string`\n\n- `omit?: string`\n  Comma-separated list of fields to exclude. Supports nested fields via\ndouble-underscore notation.\n\n\n- `order_by?: string`\n  Comma-separated list of fields to order by. Prefix with `-` for\ndescending order. Use a secondary field as a tie-breaker for\ndeterministic ordering (e.g. `date_filed,id`).\n\n\n- `page?: number`\n  Page number for standard pagination (limited to 100 pages).\n\n- `type?: string`\n  Filter by opinion type. Values are prefixed with numbers for sort order.\nCommon types include combined opinion, lead opinion, concurrence, dissent, etc.\n\n\n### Returns\n\n- `{ id?: number; author?: string; author_str?: string; cluster?: string; date_created?: string; date_modified?: string; download_url?: string; extracted_by_ocr?: boolean; html?: string; html_anon_2020?: string; html_columbia?: string; html_lawbox?: string; html_with_citations?: string; joined_by?: string[]; local_path?: string; opinions_cited?: string[]; ordering_key?: number; per_curiam?: boolean; plain_text?: string; resource_uri?: string; sha1?: string; type?: string; xml_harvard?: string; }`\n\n  - `id?: number`\n  - `author?: string`\n  - `author_str?: string`\n  - `cluster?: string`\n  - `date_created?: string`\n  - `date_modified?: string`\n  - `download_url?: string`\n  - `extracted_by_ocr?: boolean`\n  - `html?: string`\n  - `html_anon_2020?: string`\n  - `html_columbia?: string`\n  - `html_lawbox?: string`\n  - `html_with_citations?: string`\n  - `joined_by?: string[]`\n  - `local_path?: string`\n  - `opinions_cited?: string[]`\n  - `ordering_key?: number`\n  - `per_curiam?: boolean`\n  - `plain_text?: string`\n  - `resource_uri?: string`\n  - `sha1?: string`\n  - `type?: string`\n  - `xml_harvard?: string`\n\n### Example\n\n```typescript\nimport CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener();\n\n// Automatically fetches more pages as needed.\nfor await (const opinion of client.opinions.list()) {\n  console.log(opinion);\n}\n```",
     perLanguage: {
-      cli: {
-        method: 'opinions list',
-        example: "court-listener-sdk opinions list \\\n  --api-key 'My API Key'",
-      },
-      csharp: {
-        method: 'Opinions.List',
+      typescript: {
+        method: 'client.opinions.list',
         example:
-          'OpinionListParams parameters = new();\n\nvar page = await client.Opinions.List(parameters);\nawait foreach (var item in page.Paginate())\n{\n    Console.WriteLine(item);\n}',
+          "import CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener({\n  apiKey: process.env['COURT_LISTENER_API_KEY'], // This is the default and can be omitted\n});\n\n// Automatically fetches more pages as needed.\nfor await (const opinion of client.opinions.list()) {\n  console.log(opinion.id);\n}",
       },
-      go: {
-        method: 'client.Opinions.List',
+      python: {
+        method: 'opinions.list',
         example:
-          'package main\n\nimport (\n\t"context"\n\t"fmt"\n\n\t"github.com/battements-falaises/court-listener-sdk-go"\n\t"github.com/battements-falaises/court-listener-sdk-go/option"\n)\n\nfunc main() {\n\tclient := courtlistenersdk.NewClient(\n\t\toption.WithAPIKey("My API Key"),\n\t)\n\tpage, err := client.Opinions.List(context.TODO(), courtlistenersdk.OpinionListParams{})\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf("%+v\\n", page)\n}\n',
-      },
-      http: {
-        example:
-          'curl https://www.courtlistener.com/api/rest/v4/opinions/ \\\n    -H "Authorization: Bearer $COURT_LISTENER_API_KEY"',
+          'import os\nfrom court_listener_sdk import CourtListener\n\nclient = CourtListener(\n    api_key=os.environ.get("COURT_LISTENER_API_KEY"),  # This is the default and can be omitted\n)\npage = client.opinions.list()\npage = page.results[0]\nprint(page.id)',
       },
       java: {
         method: 'opinions().list',
@@ -583,25 +575,33 @@ const EMBEDDED_METHODS: MethodEntry[] = [
         example:
           'package com.court_listener_sdk.api.example\n\nimport com.court_listener_sdk.api.client.CourtListenerClient\nimport com.court_listener_sdk.api.client.okhttp.CourtListenerOkHttpClient\nimport com.court_listener_sdk.api.models.opinions.OpinionListPage\nimport com.court_listener_sdk.api.models.opinions.OpinionListParams\n\nfun main() {\n    val client: CourtListenerClient = CourtListenerOkHttpClient.fromEnv()\n\n    val page: OpinionListPage = client.opinions().list()\n}',
       },
-      php: {
-        method: 'opinions->list',
+      go: {
+        method: 'client.Opinions.List',
         example:
-          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$page = $client->opinions->list(\n  id: 0,\n  citedOpinion: 0,\n  cluster: 0,\n  clusterDocketCourt: 'cluster__docket__court',\n  clusterDocketDocketNumber: 'cluster__docket__docket_number',\n  count: 'on',\n  cursor: 'cursor',\n  dateCreated: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateCreatedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateCreatedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModified: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  fields: 'fields',\n  format: 'json',\n  idGt: 0,\n  idGte: 0,\n  idLt: 0,\n  idLte: 0,\n  idRange: 'id__range',\n  omit: 'omit',\n  orderBy: 'order_by',\n  page: 1,\n  type: 'type',\n);\n\nvar_dump($page);",
-      },
-      python: {
-        method: 'opinions.list',
-        example:
-          'import os\nfrom court_listener_sdk import CourtListener\n\nclient = CourtListener(\n    api_key=os.environ.get("COURT_LISTENER_API_KEY"),  # This is the default and can be omitted\n)\npage = client.opinions.list()\npage = page.results[0]\nprint(page.id)',
+          'package main\n\nimport (\n\t"context"\n\t"fmt"\n\n\t"github.com/battements-falaises/court-listener-sdk-go"\n\t"github.com/battements-falaises/court-listener-sdk-go/option"\n)\n\nfunc main() {\n\tclient := courtlistenersdk.NewClient(\n\t\toption.WithAPIKey("My API Key"),\n\t)\n\tpage, err := client.Opinions.List(context.TODO(), courtlistenersdk.OpinionListParams{})\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf("%+v\\n", page)\n}\n',
       },
       ruby: {
         method: 'opinions.list',
         example:
           'require "court_listener_sdk"\n\ncourt_listener = CourtListenerSDK::Client.new(api_key: "My API Key")\n\npage = court_listener.opinions.list\n\nputs(page)',
       },
-      typescript: {
-        method: 'client.opinions.list',
+      cli: {
+        method: 'opinions list',
+        example: "court-listener-sdk opinions list \\\n  --api-key 'My API Key'",
+      },
+      php: {
+        method: 'opinions->list',
         example:
-          "import CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener({\n  apiKey: process.env['COURT_LISTENER_API_KEY'], // This is the default and can be omitted\n});\n\n// Automatically fetches more pages as needed.\nfor await (const opinion of client.opinions.list()) {\n  console.log(opinion.id);\n}",
+          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$page = $client->opinions->list(\n  id: 0,\n  citedOpinion: 0,\n  cluster: 0,\n  clusterDocketCourt: 'cluster__docket__court',\n  clusterDocketDocketNumber: 'cluster__docket__docket_number',\n  count: 'on',\n  cursor: 'cursor',\n  dateCreated: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateCreatedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateCreatedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModified: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedGte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  dateModifiedLte: new \\DateTimeImmutable('2019-12-27T18:11:19.117Z'),\n  fields: 'fields',\n  format: 'json',\n  idGt: 0,\n  idGte: 0,\n  idLt: 0,\n  idLte: 0,\n  idRange: 'id__range',\n  omit: 'omit',\n  orderBy: 'order_by',\n  page: 1,\n  type: 'type',\n);\n\nvar_dump($page);",
+      },
+      csharp: {
+        method: 'Opinions.List',
+        example:
+          'OpinionListParams parameters = new();\n\nvar page = await client.Opinions.List(parameters);\nawait foreach (var item in page.Paginate())\n{\n    Console.WriteLine(item);\n}',
+      },
+      http: {
+        example:
+          'curl https://www.courtlistener.com/api/rest/v4/opinions/ \\\n    -H "Authorization: Bearer $COURT_LISTENER_API_KEY"',
       },
     },
   },
@@ -620,23 +620,15 @@ const EMBEDDED_METHODS: MethodEntry[] = [
     markdown:
       "## retrieve\n\n`client.opinions.retrieve(id: number, fields?: string, format?: 'json' | 'xml' | 'html', omit?: string): { id?: number; author?: string; author_str?: string; cluster?: string; date_created?: string; date_modified?: string; download_url?: string; extracted_by_ocr?: boolean; html?: string; html_anon_2020?: string; html_columbia?: string; html_lawbox?: string; html_with_citations?: string; joined_by?: string[]; local_path?: string; opinions_cited?: string[]; ordering_key?: number; per_curiam?: boolean; plain_text?: string; resource_uri?: string; sha1?: string; type?: string; xml_harvard?: string; }`\n\n**get** `/opinions/{id}/`\n\nLook up an opinion by its ID. Note that opinion IDs do **not** reliably\nmatch cluster IDs. If you have a CourtListener case URL, use the cluster\nAPI to look it up.\n\n\n### Parameters\n\n- `id: number`\n\n- `fields?: string`\n  Comma-separated list of fields to include. Supports nested fields via\ndouble-underscore notation (e.g. `educations__id`).\n\n\n- `format?: 'json' | 'xml' | 'html'`\n  Response serialization format. JSON is default when no `Accept` header\nis provided.\n\n- `omit?: string`\n  Comma-separated list of fields to exclude. Supports nested fields via\ndouble-underscore notation.\n\n\n### Returns\n\n- `{ id?: number; author?: string; author_str?: string; cluster?: string; date_created?: string; date_modified?: string; download_url?: string; extracted_by_ocr?: boolean; html?: string; html_anon_2020?: string; html_columbia?: string; html_lawbox?: string; html_with_citations?: string; joined_by?: string[]; local_path?: string; opinions_cited?: string[]; ordering_key?: number; per_curiam?: boolean; plain_text?: string; resource_uri?: string; sha1?: string; type?: string; xml_harvard?: string; }`\n\n  - `id?: number`\n  - `author?: string`\n  - `author_str?: string`\n  - `cluster?: string`\n  - `date_created?: string`\n  - `date_modified?: string`\n  - `download_url?: string`\n  - `extracted_by_ocr?: boolean`\n  - `html?: string`\n  - `html_anon_2020?: string`\n  - `html_columbia?: string`\n  - `html_lawbox?: string`\n  - `html_with_citations?: string`\n  - `joined_by?: string[]`\n  - `local_path?: string`\n  - `opinions_cited?: string[]`\n  - `ordering_key?: number`\n  - `per_curiam?: boolean`\n  - `plain_text?: string`\n  - `resource_uri?: string`\n  - `sha1?: string`\n  - `type?: string`\n  - `xml_harvard?: string`\n\n### Example\n\n```typescript\nimport CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener();\n\nconst opinion = await client.opinions.retrieve(0);\n\nconsole.log(opinion);\n```",
     perLanguage: {
-      cli: {
-        method: 'opinions retrieve',
-        example: "court-listener-sdk opinions retrieve \\\n  --api-key 'My API Key' \\\n  --id 0",
-      },
-      csharp: {
-        method: 'Opinions.Retrieve',
+      typescript: {
+        method: 'client.opinions.retrieve',
         example:
-          'OpinionRetrieveParams parameters = new() { ID = 0 };\n\nvar opinion = await client.Opinions.Retrieve(parameters);\n\nConsole.WriteLine(opinion);',
+          "import CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener({\n  apiKey: process.env['COURT_LISTENER_API_KEY'], // This is the default and can be omitted\n});\n\nconst opinion = await client.opinions.retrieve(0);\n\nconsole.log(opinion.id);",
       },
-      go: {
-        method: 'client.Opinions.Get',
+      python: {
+        method: 'opinions.retrieve',
         example:
-          'package main\n\nimport (\n\t"context"\n\t"fmt"\n\n\t"github.com/battements-falaises/court-listener-sdk-go"\n\t"github.com/battements-falaises/court-listener-sdk-go/option"\n)\n\nfunc main() {\n\tclient := courtlistenersdk.NewClient(\n\t\toption.WithAPIKey("My API Key"),\n\t)\n\topinion, err := client.Opinions.Get(\n\t\tcontext.TODO(),\n\t\t0,\n\t\tcourtlistenersdk.OpinionGetParams{},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf("%+v\\n", opinion.ID)\n}\n',
-      },
-      http: {
-        example:
-          'curl https://www.courtlistener.com/api/rest/v4/opinions/$ID/ \\\n    -H "Authorization: Bearer $COURT_LISTENER_API_KEY"',
+          'import os\nfrom court_listener_sdk import CourtListener\n\nclient = CourtListener(\n    api_key=os.environ.get("COURT_LISTENER_API_KEY"),  # This is the default and can be omitted\n)\nopinion = client.opinions.retrieve(\n    id=0,\n)\nprint(opinion.id)',
       },
       java: {
         method: 'opinions().retrieve',
@@ -648,25 +640,33 @@ const EMBEDDED_METHODS: MethodEntry[] = [
         example:
           'package com.court_listener_sdk.api.example\n\nimport com.court_listener_sdk.api.client.CourtListenerClient\nimport com.court_listener_sdk.api.client.okhttp.CourtListenerOkHttpClient\nimport com.court_listener_sdk.api.models.opinions.Opinion\nimport com.court_listener_sdk.api.models.opinions.OpinionRetrieveParams\n\nfun main() {\n    val client: CourtListenerClient = CourtListenerOkHttpClient.fromEnv()\n\n    val opinion: Opinion = client.opinions().retrieve(0L)\n}',
       },
-      php: {
-        method: 'opinions->retrieve',
+      go: {
+        method: 'client.Opinions.Get',
         example:
-          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$opinion = $client->opinions->retrieve(\n  0, fields: 'fields', format: 'json', omit: 'omit'\n);\n\nvar_dump($opinion);",
-      },
-      python: {
-        method: 'opinions.retrieve',
-        example:
-          'import os\nfrom court_listener_sdk import CourtListener\n\nclient = CourtListener(\n    api_key=os.environ.get("COURT_LISTENER_API_KEY"),  # This is the default and can be omitted\n)\nopinion = client.opinions.retrieve(\n    id=0,\n)\nprint(opinion.id)',
+          'package main\n\nimport (\n\t"context"\n\t"fmt"\n\n\t"github.com/battements-falaises/court-listener-sdk-go"\n\t"github.com/battements-falaises/court-listener-sdk-go/option"\n)\n\nfunc main() {\n\tclient := courtlistenersdk.NewClient(\n\t\toption.WithAPIKey("My API Key"),\n\t)\n\topinion, err := client.Opinions.Get(\n\t\tcontext.TODO(),\n\t\t0,\n\t\tcourtlistenersdk.OpinionGetParams{},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf("%+v\\n", opinion.ID)\n}\n',
       },
       ruby: {
         method: 'opinions.retrieve',
         example:
           'require "court_listener_sdk"\n\ncourt_listener = CourtListenerSDK::Client.new(api_key: "My API Key")\n\nopinion = court_listener.opinions.retrieve(0)\n\nputs(opinion)',
       },
-      typescript: {
-        method: 'client.opinions.retrieve',
+      cli: {
+        method: 'opinions retrieve',
+        example: "court-listener-sdk opinions retrieve \\\n  --api-key 'My API Key' \\\n  --id 0",
+      },
+      php: {
+        method: 'opinions->retrieve',
         example:
-          "import CourtListener from 'court-listener-sdk';\n\nconst client = new CourtListener({\n  apiKey: process.env['COURT_LISTENER_API_KEY'], // This is the default and can be omitted\n});\n\nconst opinion = await client.opinions.retrieve(0);\n\nconsole.log(opinion.id);",
+          "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\n$client = new Client(apiKey: 'My API Key');\n\n$opinion = $client->opinions->retrieve(\n  0, fields: 'fields', format: 'json', omit: 'omit'\n);\n\nvar_dump($opinion);",
+      },
+      csharp: {
+        method: 'Opinions.Retrieve',
+        example:
+          'OpinionRetrieveParams parameters = new() { ID = 0 };\n\nvar opinion = await client.Opinions.Retrieve(parameters);\n\nConsole.WriteLine(opinion);',
+      },
+      http: {
+        example:
+          'curl https://www.courtlistener.com/api/rest/v4/opinions/$ID/ \\\n    -H "Authorization: Bearer $COURT_LISTENER_API_KEY"',
       },
     },
   },
