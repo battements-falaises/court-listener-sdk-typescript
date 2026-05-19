@@ -1,4 +1,4 @@
-configured_endpoints: 19
-openapi_spec_url: https://storage.googleapis.com/stainless-sdk-openapi-specs/cloud-api-sdks%2Fcourt-listener-sdk-21652c2d2e6a5aab678ca435ba09ef698ff34270021f349660b84d5d98bf3923.yml
-openapi_spec_hash: 356a7298b2abac3fdf72ad5ee046b952
-config_hash: a902d1ea6f3f02ad6e083b6d7b05569f
+configured_endpoints: 8
+openapi_spec_url: https://storage.googleapis.com/stainless-sdk-openapi-specs/cloud-api-sdks/court-listener-sdk-4227e6b77b360cadbad92fdfc3270dbe9b2505e0b4a5a626c1116ba4cd334f4d.yml
+openapi_spec_hash: dce67e5045872c0bdece09680e36ff8c
+config_hash: dac363f79b07764d2d282c38f3871de4
